@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Coro;
 use Coro::EV;
+use Coro::Handle;
 use aliased 'Rx::Observable';
 
 sub once {
@@ -66,6 +67,19 @@ sub timer {
         sub { 1 },
         sub { $duration },
     );
+}
+
+sub from_stdin {
+    my $self = shift;
+    Observable->create(sub {
+        my ($observer, $scheduler) = @_;
+        my $fh = Coro::Handle->new_from_fh(*STDIN);
+        while (1) {
+            my $line = $fh->readline;
+            chomp $line;
+            $observer->on_next($line);
+        }
+    });
 }
 
 sub run { EV::loop }
