@@ -97,10 +97,55 @@ sub grep {
         sub {
             my ($observer, $scheduler) = @_;
             $subscription = $self->subscribe(
+                on_complete => sub { $observer->on_complete },
+                on_error    => sub { $observer->on_error($_) },
                 on_next     => sub {
                     my $value = $_;
                     $observer->on_next($value) if $predicate->($_);
                 },
+            );
+        },
+        sub {
+            undef $subscription;
+        },
+    );
+}
+
+sub concat {
+    my ($self, $observable) = @_;
+    my $class = ref $self;
+    my $subscription;
+    $class->create(
+        sub {
+            my ($observer, $scheduler) = @_;
+            $subscription = $self->subscribe(
+                on_next     => sub { $observer->on_next($_) },
+                on_error    => sub { $observer->on_error($_) },
+                on_complete => sub {
+                    $subscription = $self->subscribe(
+                        on_next     => sub { $observer->on_next($_) },
+                        on_complete => sub { $observer->on_complete },
+                        on_error    => sub { $observer->on_error($_) },
+                    );
+                },
+            );
+        },
+        sub {
+            undef $subscription;
+        },
+    );
+}
+
+sub count {
+    my ($self, $observable) = @_;
+    my $class = ref $self;
+    my $subscription;
+    $class->create(
+        sub {
+            my ($observer, $scheduler) = @_;
+            my $counter = 1;
+            $subscription = $self->subscribe(
+                on_next     => sub { $observer->on_next($counter++) },
                 on_complete => sub { $observer->on_complete },
                 on_error    => sub { $observer->on_error($_) },
             );
