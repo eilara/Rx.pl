@@ -9,7 +9,7 @@ use aliased 'DateTime::Duration';
 use Coro::Handle;
 use Rx;
 
-my $o = Rx->interval(Duration->new(seconds => 0.5))
+my $o = Rx->interval(Duration->new(seconds => 1))
           ->map(sub{ 2 * $_ })
           ->grep(sub{ $_ % 3 == 0 });
 
