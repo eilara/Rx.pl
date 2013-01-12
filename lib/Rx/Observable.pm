@@ -30,6 +30,16 @@ sub subscribe {
     }, $self->on_unsubscribe);
 }
 
+sub subscribe_observer {
+    my ($self, $observer, %subs) = @_;
+    return $self->subscribe(
+        on_next     => sub { $observer->on_next($_)  },
+        on_complete => sub { $observer->on_complete  },
+        on_error    => sub { $observer->on_error($_) },
+        %subs,
+    );
+}
+
 sub create {
     my ($class, $on_subscribe, $on_unsubscribe) = @_;
     $class->new(
@@ -77,10 +87,9 @@ sub map {
     $class->create(
         sub {
             my ($observer, $scheduler) = @_;
-            $subscription = $self->subscribe(
-                on_next     => sub { $observer->on_next($projection->($_)) },
-                on_complete => sub { $observer->on_complete },
-                on_error    => sub { $observer->on_error($_) },
+            $subscription = $self->subscribe_observer(
+                $observer, on_next => sub
+                    { $observer->on_next($projection->($_)) },
             );
         },
         sub {
@@ -96,10 +105,9 @@ sub grep {
     $class->create(
         sub {
             my ($observer, $scheduler) = @_;
-            $subscription = $self->subscribe(
-                on_complete => sub { $observer->on_complete },
-                on_error    => sub { $observer->on_error($_) },
-                on_next     => sub {
+            $subscription = $self->subscribe_observer(
+                $observer,
+                on_next => sub {
                     my $value = $_;
                     $observer->on_next($value) if $predicate->($_);
                 },
@@ -118,16 +126,9 @@ sub concat {
     $class->create(
         sub {
             my ($observer, $scheduler) = @_;
-            $subscription = $self->subscribe(
-                on_next     => sub { $observer->on_next($_) },
-                on_error    => sub { $observer->on_error($_) },
-                on_complete => sub {
-                    $subscription = $self->subscribe(
-                        on_next     => sub { $observer->on_next($_) },
-                        on_complete => sub { $observer->on_complete },
-                        on_error    => sub { $observer->on_error($_) },
-                    );
-                },
+            $subscription = $self->subscribe_observer(
+                $observer, on_complete => sub
+                    { $subscription = $self->subscribe_observer($observer) },
             );
         },
         sub {
@@ -144,10 +145,9 @@ sub count {
         sub {
             my ($observer, $scheduler) = @_;
             my $counter = 1;
-            $subscription = $self->subscribe(
-                on_next     => sub { $observer->on_next($counter++) },
-                on_complete => sub { $observer->on_complete },
-                on_error    => sub { $observer->on_error($_) },
+            $subscription = $self->subscribe_observer(
+                $observer, on_next => sub
+                    { $observer->on_next($counter++) },
             );
         },
         sub {
