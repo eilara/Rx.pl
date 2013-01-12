@@ -5,6 +5,7 @@ use warnings;
 use Moose;
 use Rx::Observer;
 use Rx::Scheduler;
+use Rx::Observable::Combinators;
 
 has scheduler => (
     is         => 'ro',
@@ -15,10 +16,7 @@ has scheduler => (
 has on_subscribe   => (is => 'ro', required => 1);
 has on_unsubscribe => (is => 'ro', default => sub { sub{} });
 
-sub _build_scheduler {
-    my $self = shift;
-    return Rx::Scheduler->new;
-}
+sub _build_scheduler { Rx::Scheduler->new }
 
 sub subscribe {
     my ($self, %subs) = @_;
@@ -42,7 +40,7 @@ sub subscribe_observer {
 
 sub create {
     my ($class, $on_subscribe, $on_unsubscribe) = @_;
-    $class->new(
+    return $class->new(
         on_subscribe   => $on_subscribe,
         on_unsubscribe => $on_unsubscribe || sub {},
     );
@@ -53,10 +51,21 @@ sub create_with_parent {
     my $class = ref $self;
     my $subscription;
     my $changer = sub { $subscription = shift };
-    $class->create(
+    return $class->create(
         sub { $subscription = $on_subscribe->(@_, $changer) },
         sub { undef $subscription },
     );
+}
+
+sub create_on_parent {
+    my ($self, $subscribe_observer) = @_;
+    return $self->create_with_parent(sub {
+        my ($observer, $scheduler, $changer) = @_;
+        return $self->subscribe_observer(
+            $observer,
+            $subscribe_observer->($observer, $scheduler, $changer),
+        );
+    });
 }
 
 sub generate {
@@ -91,62 +100,4 @@ sub generate {
     });
 }
 
-sub map {
-    my ($self, $projection) = @_;
-    $self->create_with_parent(sub {
-        my ($observer, $scheduler) = @_;
-        return $self->subscribe_observer(
-            $observer, on_next => sub
-                { $observer->on_next($projection->($_)) },
-        );
-    });
-}
-
-sub grep {
-    my ($self, $predicate) = @_;
-    my $class = ref $self;
-    my $subscription;
-    $self->create_with_parent(sub {
-        my ($observer, $scheduler) = @_;
-        return $self->subscribe_observer(
-            $observer,
-            on_next => sub {
-                my $value = $_;
-                $observer->on_next($value) if $predicate->($_);
-            },
-        );
-    });
-}
-
-sub concat {
-    my ($self, $observable) = @_;
-    my $class = ref $self;
-    my $subscription;
-    $self->create_with_parent(sub {
-        my ($observer, $scheduler, $set_subscription) = @_;
-        $subscription = $self->subscribe_observer(
-            $observer, on_complete => sub {
-                $set_subscription->
-                    ($self->subscribe_observer($observer))
-            },
-        );
-    });
-}
-
-sub count {
-    my ($self, $observable) = @_;
-    my $class = ref $self;
-    my $subscription;
-    $self->create_with_parent(sub {
-        my ($observer, $scheduler) = @_;
-        my $counter = 1;
-        return $self->subscribe_observer(
-            $observer, on_next => sub
-                { $observer->on_next($counter++) },
-        );
-    });
-}
-
 1;
-
-__END__
