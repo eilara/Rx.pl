@@ -48,24 +48,26 @@ sub range {
 }
 
 sub interval {
-    my ($class, $duration) = @_;
+    my ($class, $duration, $scheduler) = @_;
     Observable->generate(
         0,
         sub { 1 },
         sub { 1 + $_ },
         sub { $_ },
         sub { $duration },
+        $scheduler,
     );
 }
 
 sub timer {
-    my ($class, $duration) = @_;
+    my ($class, $duration, $scheduler) = @_;
     Observable->generate(
         0,
         sub { 0 },
         sub { $_ },
         sub { 1 },
         sub { $duration },
+        $scheduler,
     );
 }
 

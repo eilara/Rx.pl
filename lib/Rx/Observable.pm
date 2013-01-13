@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Moose;
 use Rx::Observer;
-use Rx::Scheduler;
+use Rx::Scheduler::Coro;
 use Rx::Observable::Combinators;
 
 has scheduler => (
@@ -16,7 +16,7 @@ has scheduler => (
 has on_subscribe   => (is => 'ro', required => 1);
 has on_unsubscribe => (is => 'ro', default => sub { sub{} });
 
-sub _build_scheduler { Rx::Scheduler->new }
+sub _build_scheduler { Rx::Scheduler::Coro->new }
 
 sub subscribe {
     my ($self, %subs) = @_;
@@ -39,10 +39,15 @@ sub subscribe_observer {
 }
 
 sub create {
-    my ($class, $on_subscribe, $on_unsubscribe) = @_;
+    my ($class, $on_subscribe, @more) = @_;
+    my ($on_unsubscribe, $scheduler) =
+        @more == 0? (undef, undef):
+        @more == 2? (@more):
+        ref($more[0]) eq 'CODE'? ($more[0], undef): (undef, $more[0]);
     return $class->new(
         on_subscribe   => $on_subscribe,
         on_unsubscribe => $on_unsubscribe || sub {},
+        ($scheduler? (scheduler => $scheduler): ()),
     );
 }
 
@@ -54,6 +59,7 @@ sub create_with_parent {
     return $class->create(
         sub { $subscription = $on_subscribe->(@_, $changer) },
         sub { undef $subscription },
+        $self->scheduler,
     );
 }
 
@@ -75,7 +81,8 @@ sub generate {
         $continue_predicate, 
         $step_action,
         $result_projection,
-        $inter_step_duration
+        $inter_step_duration,
+        $scheduler,
     ) = @_;
     $class->create(sub {
         my ($observer, $scheduler) = @_;
@@ -97,7 +104,7 @@ sub generate {
 
         } until (!($continue_predicate->($_)));
         $observer->on_complete;
-    });
+    }, $scheduler);
 }
 
 1;
