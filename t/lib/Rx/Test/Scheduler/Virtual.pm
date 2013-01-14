@@ -1,4 +1,4 @@
-package Rx::Scheduler::Virtual;
+package Rx::Test::Scheduler::Virtual;
 
 use strict;
 use warnings;
@@ -39,15 +39,13 @@ sub advance_by {
     my $max = $self->{now} + $ms;
     while (my $item = $self->peek_signal) {
         my ($t, $signal) = @$item;
-        if ($t > $max) {
-            $self->{now} = $max;
-            last;
-        }
+        last if $t > $max;
         $self->{now} = $t;
         $self->pop_signal;
         $signal->send;
         cede;
     }
+    $self->{now} = $max;
 }
 
 1;
