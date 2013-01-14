@@ -2,9 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Coro;
-
 use aliased 'Rx::Scheduler::Virtual' => 'IUT';
-use aliased 'DateTime::Duration';
 
 my $iut = IUT->new(now => 100);
 

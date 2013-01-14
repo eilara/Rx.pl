@@ -24,7 +24,7 @@ sub _build_queue { Heap::Simple->new(elements => ['Array']) }
 
 sub rest {
     my ($self, $duration) = @_;
-    $self->rest($duration->seconds*1000);
+    $self->rest_msec($duration->seconds*1000);
 }
 
 sub rest_msec {
@@ -36,12 +36,17 @@ sub rest_msec {
 
 sub advance_by {
     my ($self, $ms) = @_;
-    $self->{now} += $ms;
+    my $max = $self->{now} + $ms;
     while (my $item = $self->peek_signal) {
         my ($t, $signal) = @$item;
-        last if $t > $self->now;
+        if ($t > $max) {
+            $self->{now} = $max;
+            last;
+        }
+        $self->{now} = $t;
         $self->pop_signal;
         $signal->send;
+        cede;
     }
 }
 
