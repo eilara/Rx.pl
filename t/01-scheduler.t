@@ -22,8 +22,6 @@ is $state, 1, 'at t=100';
 
 $iut->advance_by(60);
 
-cede;
-
 is $state, 2, 'at t=160';
 
 done_testing;

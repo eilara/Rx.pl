@@ -7,8 +7,9 @@ use Coro;
 use Coro::EV;
 use Coro::AnyEvent;
 use Coro::Signal;
-use Rx::Disposable;
 use Heap::Simple;
+use Rx::Disposable;
+use Rx;
 
 extends 'Rx::Scheduler::Coro';
 
@@ -43,7 +44,7 @@ sub advance_by {
         $self->{now} = $t;
         $self->pop_signal;
         $signal->send;
-        cede;
+        Rx->run;
     }
     $self->{now} = $max;
 }

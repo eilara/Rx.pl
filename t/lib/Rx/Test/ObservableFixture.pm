@@ -5,13 +5,14 @@ use warnings;
 use Test::More;
 use Test::Builder;
 use Coro;
+use Rx;
 use aliased 'Rx::Test::Scheduler::Virtual' => 'Scheduler';
 
 use base 'Exporter';
 our @EXPORT=qw(
     @next @complete @error
     $scheduler
-    advance_and_check_event_count subscribe
+    advance_and_check_event_count subscribe run_loop
 );
 
 our (@next, @complete, @error);
@@ -37,7 +38,7 @@ sub subscribe($) {
         on_complete => sub { push @complete, 1  },
         on_error    => sub { push @error   , $_ },
     );
-    cede;
+    Rx->run;
     return $s;
 }
 
