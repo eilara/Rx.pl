@@ -12,12 +12,21 @@ use base 'Exporter';
 our @EXPORT=qw(
     @next @complete @error
     $scheduler
-    advance_and_check_event_count subscribe run_loop
+    advance_and_check_event_count
+    advance_and_check_event_counts
+    subscribe run_loop
 );
 
 our (@next, @complete, @error);
 
 our $scheduler = Scheduler->new;
+
+sub advance_and_check_event_counts {
+    my (@events) = @_;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    advance_and_check_event_count(@$_)
+        foreach @events;
+}
 
 sub advance_and_check_event_count($$;$$) {
     my ($advance_by, $next, $complete, $error) = @_;
