@@ -26,9 +26,20 @@ sub advance_and_check_event_count($$;$$) {
     $scheduler->advance_by($advance_by) if $advance_by;
     my $now = $scheduler->now;
     local $Test::Builder::Level = $Test::Builder::Level + 1;
-    is scalar @next    , $next    , "\@next     at t=$now";
-    is scalar @complete, $complete, "\@complete at t=$now";
-    is scalar @error   , $error   , "\@error    at t=$now";
+    my ($actual_next, $actual_complete, $actual_error) =
+        (scalar @next, scalar @complete, scalar @error);
+    is_deeply
+        {
+            next     => $actual_next,
+            complete => $actual_complete,
+            error    => $actual_error,
+        },
+        {
+            next     => $next,
+            complete => $complete,
+            error    => $error,
+        },
+        "t=$now (next=$next, complete=$complete, error=$error)";
 }
 
 sub subscribe($) {
