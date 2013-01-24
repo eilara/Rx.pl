@@ -1,23 +1,20 @@
 use strict;
 use warnings;
 use Test::More;
-use aliased 'DateTime::Duration';
-use Rx;
-use Rx::Test::ObservableFixture;
+use Reactive;
+use Reactive::Test::ObservableFixture;
 
-my $iut = Rx->interval(Duration->new(seconds => 1), $scheduler)
-            ->count;
+my $iut = Observable->interval(1000, $scheduler)
+                    ->take(3);
 
-my $s   = subscribe $iut;
+my $s = subscribe $iut;
 
 advance_and_check_event_counts
-    [1001 => 1],
-    [1000 => 2];
-
-is $next[-1], 2, '2nd event';
-
-advance_and_check_event_count 5001 => 7;
-is $next[-1], 7, '7th event';
+    [1001 => 1   ],
+    [1000 => 2   ],
+    [1000 => 3, 1],
+    [1000 => 3, 1],
+    [1000 => 3, 1];
 
 done_testing;
 

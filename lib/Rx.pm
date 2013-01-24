@@ -44,6 +44,7 @@ sub range {
         my $i = $from;
         my $to = $from + $size;
         while ($i < $to) { $observer->on_next($i++) }
+        $observer->on_complete;
     });
 }
 

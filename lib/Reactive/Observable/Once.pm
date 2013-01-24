@@ -1,7 +1,5 @@
 package Reactive::Observable::Once;
 
-use strict;
-use warnings;
 use Moose;
 use aliased 'Reactive::Disposable';
 

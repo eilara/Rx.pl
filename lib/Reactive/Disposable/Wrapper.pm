@@ -1,7 +1,5 @@
 package Reactive::Disposable::Wrapper;
 
-use strict;
-use warnings;
 use Moose;
 
 has wrap => (is => 'rw');

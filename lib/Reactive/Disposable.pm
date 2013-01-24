@@ -1,7 +1,5 @@
 package Reactive::Disposable;
 
-use strict;
-use warnings;
 use Moose;
 
 has is_disposed => (is => 'rw', default => 0);

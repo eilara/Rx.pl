@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Builder;
-use Coro;
 use Reactive;
 use aliased 'Reactive::Test::Scheduler::Virtual' => 'Scheduler';
 

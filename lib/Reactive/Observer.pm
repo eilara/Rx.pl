@@ -1,7 +1,5 @@
 package Reactive::Observer;
 
-use strict;
-use warnings;
 use Moose;
 
 has handlers => (is => 'ro', required => 1);

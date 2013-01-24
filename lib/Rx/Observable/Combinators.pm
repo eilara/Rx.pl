@@ -34,7 +34,7 @@ sub concat {
 }
 
 sub count {
-    my ($self, $observable) = @_;
+    my ($self) = @_;
     $self->create_with_parent(sub {
         my ($observer, $scheduler) = @_;
         my $counter = 1;
@@ -44,6 +44,54 @@ sub count {
         );
     });
 }
+#use Devel::Refcount qw( refcount );
+sub take {
+    my ($self, $take_count) = @_;
+    my $class = ref $self;
+            my $parent_subscription;
+    return $class->new(
+        on_subscribe => sub {
+            my ($observer, $scheduler) = @_;
+            my $taken_count = 0;
+            $parent_subscription = $self->subscribe(
+                on_next => sub {
+                     $observer->on_next($_);
+                     $taken_count++;
+                     if ($taken_count >= $take_count) {
+                         $observer->on_complete;
+    print "------------------------------s2=$parent_subscription\n";
+#    print "REFCOUNT=".(refcount $parent_subscription)."\n";
+                         $parent_subscription = undef;
+                     }
+                },
+                on_complete => sub { $observer->on_complete  },
+                on_error    => sub { $observer->on_error($_) },
+            );
+            print "p=$parent_subscription\n";
+#    print "REFCOUNT222=".(refcount $parent_subscription)."\n";
+        },
+        on_unsubscribe => sub {
+            #$parent_subscription = undef;
+        },
+        scheduler => $self->scheduler,
+    );
+}
+
+# sub take {
+#     my ($self, $take_count) = @_;
+#     my $taken_count = 0;
+#     $self->create_on_parent(sub {
+#         my ($observer, $scheduler, $set_subscription) = @_;
+#         (on_next => sub {
+#              $observer->on_next($_);
+#              $taken_count++;
+#              if ($taken_count >= $take_count) {
+#                  $observer->on_complete();
+#                  $set_subscription->(undef);
+#              }
+#         });
+#     });
+# }
 
 1;
 

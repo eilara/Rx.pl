@@ -13,6 +13,7 @@ sub empty {
 
 sub DEMOLISH {
     my $self = shift;
+    print "DEM=$self\n";
     $self->cleanup->();
 }
 

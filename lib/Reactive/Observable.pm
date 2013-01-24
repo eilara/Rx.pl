@@ -1,7 +1,5 @@
 package Reactive::Observable;
 
-use strict;
-use warnings;
 use Moose;
 use Reactive::Scheduler::Coro;
 use aliased 'Reactive::Observer';
@@ -12,6 +10,8 @@ use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Concat';
+use aliased 'Reactive::Observable::Take';
+use aliased 'Reactive::Observable::FromStdIn';
 
 has scheduler => (
     is         => 'ro',
@@ -35,6 +35,8 @@ sub subscribe_observer {
 
 sub maybe_scheduler($) { $_[0]? (scheduler => $_[0]): () }
 
+# creating --------------------------------------------------------------------
+
 sub once {
     my ($class, $value, $scheduler) = @_;
     return Once->new(value => $value, maybe_scheduler $scheduler);
@@ -45,6 +47,8 @@ sub range {
     return Range->new
         (from => $from, size => $size, maybe_scheduler $scheduler);
 }
+
+# from time --------------------------------------------------------------------
 
 sub interval {
     my ($class, $duration, $scheduler) = @_;
@@ -69,6 +73,15 @@ sub timer {
         maybe_scheduler $scheduler,
     );
 }
+
+# from IO ----------------------------------------------------------------------
+
+sub from_stdin {
+    my ($class, $scheduler) = @_;
+    return FromStdIn->new(maybe_scheduler $scheduler);
+}
+
+# projections ------------------------------------------------------------------
 
 sub map {
     my ($self, $projection, $scheduler) = @_;
@@ -104,5 +117,16 @@ sub concat {
         maybe_scheduler $scheduler,
     );
 }
+
+sub take {
+    my ($self, $max, $scheduler) = @_;
+    return Take->new(
+        source => $self,
+        max    => $max,
+        maybe_scheduler $scheduler,
+    );
+}
+
+# anamorphisms -----------------------------------------------------------------
 
 1;

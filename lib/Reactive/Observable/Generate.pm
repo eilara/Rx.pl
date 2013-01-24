@@ -1,7 +1,5 @@
 package Reactive::Observable::Generate;
 
-use strict;
-use warnings;
 use Moose;
 
 extends 'Reactive::Observable';

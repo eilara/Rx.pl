@@ -2,7 +2,6 @@ package Reactive::Test::Scheduler::Virtual;
 
 use Moose;
 use Scalar::Util qw(weaken);
-use Coro::AnyEvent;
 use Heap::MinMax;
 use Reactive::Disposable::Closure;
 
@@ -23,6 +22,7 @@ sub schedule_at {
 sub _schedule_at {
     my ($self, $at, $action, $disposable) = @_;
     weaken $disposable;
+    return unless $disposable;
     my $wrapper_action = sub {
         my $new_at = $action->();
         if (defined $new_at) {

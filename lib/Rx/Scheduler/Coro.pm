@@ -6,17 +6,15 @@ use Moose;
 use Coro;
 use Coro::EV;
 use Coro::AnyEvent;
-use Rx::Disposable;
+use Reactive::Disposable::Coro;
 
 with 'Rx::Scheduler';
 
 sub schedule_now {
-    my ($self, $action, $on_cancel) = @_;
+    my ($self, $action) = @_;
     my $coro = async { $action->($self) };
-    return Rx::Disposable->new(cleanup => sub {
-        $coro->cancel;
-        $on_cancel->();
-    });
+    my $subscription = Rx::Disposable::Coro->new(coro => $coro);
+    return $subscription;
 }
 
 sub rest {
