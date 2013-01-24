@@ -2,9 +2,9 @@ package Reactive::Observable;
 
 use Moose;
 use Reactive::Scheduler::Coro;
+use aliased 'Reactive::Disposable';
 use aliased 'Reactive::Observer';
-use aliased 'Reactive::Observable::Once';
-use aliased 'Reactive::Observable::Range';
+use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Grep';
@@ -38,14 +38,50 @@ sub maybe_scheduler($) { $_[0]? (scheduler => $_[0]): () }
 # creating --------------------------------------------------------------------
 
 sub once {
-    my ($class, $value, $scheduler) = @_;
-    return Once->new(value => $value, maybe_scheduler $scheduler);
+    my ($class, $value) = @_;
+    return FromClosure->new(on_subscribe => sub {
+        my $observer = shift;
+        $observer->on_next($value);
+        $observer->on_complete;
+        return Disposable->empty;
+    });
 }
 
 sub range {
-    my ($class, $from, $size, $scheduler) = @_;
-    return Range->new
-        (from => $from, size => $size, maybe_scheduler $scheduler);
+    my ($class, $from, $size) = @_;
+    return FromClosure->new(on_subscribe => sub {
+        my $observer = shift;
+        my $i    = $from;
+        my $to   = $from + $size;
+        while ($i < $to) { $observer->on_next($i++) }
+        $observer->on_complete;
+        return Disposable->empty;
+    });
+}
+
+sub empty {
+    my ($class) = @_;
+    return FromClosure->new(on_subscribe => sub {
+        my $observer = shift;
+        $observer->on_complete;
+        return Disposable->empty;
+    });
+}
+
+sub never {
+    my ($class) = @_;
+    return FromClosure->new(on_subscribe => sub {
+        return Disposable->empty;
+    });
+}
+
+sub throw {
+    my ($class, $err) = @_;
+    return FromClosure->new(on_subscribe => sub {
+        my $observer = shift;
+        $observer->on_error($err);
+        return Disposable->empty;
+    });
 }
 
 # from time --------------------------------------------------------------------
@@ -76,54 +112,44 @@ sub timer {
 
 # from IO ----------------------------------------------------------------------
 
-sub from_stdin {
-    my ($class, $scheduler) = @_;
-    return FromStdIn->new(maybe_scheduler $scheduler);
-}
+sub from_stdin { return FromStdIn->new }
 
 # projections ------------------------------------------------------------------
 
 sub map {
-    my ($self, $projection, $scheduler) = @_;
+    my ($self, $projection) = @_;
     return Map->new(
         source     => $self,
         projection => $projection, 
-        maybe_scheduler $scheduler,
     );
 }
 
 sub grep {
-    my ($self, $predicate, $scheduler) = @_;
+    my ($self, $predicate) = @_;
     return Grep->new(
         source    => $self,
         predicate => $predicate, 
-        maybe_scheduler $scheduler,
     );
 }
 
 sub count {
-    my ($self, $scheduler) = @_;
-    return Count->new(
-        source => $self,
-        maybe_scheduler $scheduler,
-    );
+    my ($self) = @_;
+    return Count->new(source => $self);
 }
 
 sub concat {
-    my ($self, $next_observable, $scheduler) = @_;
+    my ($self, $next_observable) = @_;
     return Concat->new(
         source          => $self,
         next_observable => $next_observable, 
-        maybe_scheduler $scheduler,
     );
 }
 
 sub take {
-    my ($self, $max, $scheduler) = @_;
+    my ($self, $max) = @_;
     return Take->new(
         source => $self,
         max    => $max,
-        maybe_scheduler $scheduler,
     );
 }
 
@@ -132,26 +158,3 @@ sub take {
 1;
 
 
-__END__
-
-
-sub empty {
-    my ($class, $value) = @_;
-    Observable->create(sub {
-        my ($observer, $scheduler) = @_;
-        $observer->on_complete;
-    });
-}
-
-sub never {
-    my ($class) = @_;
-    Observable->create(sub {});
-}
-
-sub throw {
-    my ($class, $err) = @_;
-    Observable->create(sub {
-        my ($observer, $scheduler) = @_;
-        $observer->on_error($err);
-    });
-}

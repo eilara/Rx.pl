@@ -9,10 +9,10 @@ use Coro::Handle;
 use Reactive;
 
 my $o = Observable->interval(100)
-          ->map(sub{ 2 * $_ })
-          ->grep(sub{ $_ % 3 == 0 })
-          ->take(10)
-          ->concat( Observable->once("Bye!") );
+                  ->map(sub{ 2 * $_ })
+                  ->grep(sub{ $_ % 3 == 0 })
+                  ->take(10)
+                  ->concat( Observable->once("Bye!") );
 
 my $s = $o->subscribe(
     on_next     => sub { say "on_next=$_" },
