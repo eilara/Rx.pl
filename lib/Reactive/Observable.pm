@@ -10,6 +10,8 @@ use aliased 'Reactive::Observable::Range';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Grep';
+use aliased 'Reactive::Observable::Count';
+use aliased 'Reactive::Observable::Concat';
 
 has scheduler => (
     is         => 'ro',
@@ -56,6 +58,18 @@ sub interval {
     );
 }
 
+sub timer {
+    my ($class, $duration, $scheduler) = @_;
+    return Generate->new(
+        init_value          => 0,
+        continue_predicate  => sub { 0 },
+        step_action         => sub { $_ },
+        result_projection   => sub { 1 },
+        inter_step_duration => sub { $duration },
+        maybe_scheduler $scheduler,
+    );
+}
+
 sub map {
     my ($self, $projection, $scheduler) = @_;
     return Map->new(
@@ -70,6 +84,23 @@ sub grep {
     return Grep->new(
         source    => $self,
         predicate => $predicate, 
+        maybe_scheduler $scheduler,
+    );
+}
+
+sub count {
+    my ($self, $scheduler) = @_;
+    return Count->new(
+        source => $self,
+        maybe_scheduler $scheduler,
+    );
+}
+
+sub concat {
+    my ($self, $next_observable, $scheduler) = @_;
+    return Concat->new(
+        source          => $self,
+        next_observable => $next_observable, 
         maybe_scheduler $scheduler,
     );
 }

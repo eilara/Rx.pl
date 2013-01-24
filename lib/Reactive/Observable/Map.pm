@@ -9,10 +9,9 @@ extends 'Reactive::Observable::Wrapper';
 has projection => (is => 'ro', required => 1);
 
 sub build_wrapper_observer {
-    my ($self, $forward_to, $parent) = @_;
+    my ($self, %args) = @_;
     return Reactive::Observable::Map::Observer->new(
-        parent     => $parent,
-        target     => $forward_to,
+        %args,
         projection => $self->projection,
     );
 }

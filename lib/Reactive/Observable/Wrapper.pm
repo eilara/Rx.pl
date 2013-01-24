@@ -1,7 +1,5 @@
 package Reactive::Observable::Wrapper;
 
-use strict;
-use warnings;
 use Moose;
 use aliased 'Reactive::Disposable::Wrapper';
 
@@ -18,8 +16,8 @@ sub run {
     my ($self, $observer) = @_;
     my $subscription = Wrapper->new;
     my $wrapper_observer = $self->build_wrapper_observer(
-        $observer,
-        $subscription,
+        parent    => $subscription,
+        target    => $observer,
     );
     my $source_subscription = $self->source
                                    ->subscribe_observer($wrapper_observer);

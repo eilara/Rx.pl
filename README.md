@@ -6,15 +6,15 @@ Microsoft Reactive Extensions clone for Perl
 Install from CPAN:
 ------------------
 
-Moose, aliased, Coro, DateTime, EV, AnyEvent
+Moose, aliased, Coro, EV, AnyEvent
 
 Examples:
 ---------
 
 An observable that notifies after 10 seconds of mouse inactivity:
 
-            Rx->from_mouse_move
-    ->merge(Rx->from_mouse_click)
+            Observable->from_mouse_move
+    ->merge(Observable->from_mouse_click)
     ->map(sub { 1 })
     ->timeout(10->seconds, sub { 0 })
     ->distinct_changes;
@@ -43,9 +43,6 @@ Then subscribe on this stream to sketch:
 TODO
 ----
 
-* split observable functionality into different roles- creating,
-  anamorphisms, catamorphisms, projections
-
 * observable from SDL mouse/keyboard events, HTTP requests,
   sockets, lists 
 
@@ -53,16 +50,14 @@ TODO
   inactivity timer, perl news feed, perl activity graph, time flies,
   online spellchecker, image download robot, proxy
 
-* how to exit program or thread from within coro?  
-
-
-
 LINKS
 -----
 
 https://github.com/richardszalay/raix/wiki/Reactive-Operators
 
+http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
+
+http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
+
 http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10_FlowControlExamples.cs
-
-
 

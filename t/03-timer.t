@@ -1,11 +1,10 @@
 use strict;
 use warnings;
 use Test::More;
-use aliased 'DateTime::Duration';
-use Rx;
-use Rx::Test::ObservableFixture;
+use Reactive;
+use Reactive::Test::ObservableFixture;
 
-my $iut = Rx->timer(Duration->new(seconds => 2), $scheduler);
+my $iut = Observable->timer(2000, $scheduler);
 
 my $s = subscribe $iut;
 
