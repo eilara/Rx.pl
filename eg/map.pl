@@ -5,11 +5,10 @@ use strict;
 use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
-use aliased 'DateTime::Duration';
 use Coro::Handle;
-use Rx;
+use Reactive;
 
-my $o = Rx->interval(Duration->new(seconds => 1))
+my $o = Observable->interval(100)
           ->map(sub{ 2 * $_ })
           ->grep(sub{ $_ % 3 == 0 });
 

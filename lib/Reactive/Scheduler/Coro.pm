@@ -1,23 +1,11 @@
 package Reactive::Scheduler::Coro;
 
-use strict;
-use warnings;
-use Scalar::Util qw(weaken);
 use Moose;
-use Coro;
-use Coro::EV;
+use Scalar::Util qw(weaken);
 use Coro::AnyEvent;
-use Reactive::Disposable::Coro;
 use Reactive::Disposable::Timer;
 
 with 'Reactive::Scheduler';
-
-sub schedule_now {
-    my ($self, $action) = @_;
-    my $coro = async { $action->() };
-    my $subscription = Reactive::Disposable::Coro->new(coro => $coro);
-    return $subscription;
-}
 
 # at is in msec
 sub schedule_at {

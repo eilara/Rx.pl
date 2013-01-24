@@ -5,14 +5,10 @@ use strict;
 use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
-use Rx;
+use Reactive;
 
-my $o = Rx->once(3);
-
-my $s = $o->subscribe(
-    on_next     => sub { say "on_next=$_" },
-    on_complete => sub { say "complete" },
-);
-
-say "Running event loop...";
-Rx->run;
+Observable->once(3)
+          ->subscribe(
+                on_next     => sub { say "on_next=$_" },
+                on_complete => sub { say "complete" },
+            );
