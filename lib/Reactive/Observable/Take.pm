@@ -29,7 +29,7 @@ sub on_next {
     my $taken = $self->taken + 1;
     $self->taken($taken);
     if ($taken >= $self->max) {
-#        $self->parent->wrap(undef);
+        $self->parent->wrap(undef);
         $self->on_complete;
     }
 }
