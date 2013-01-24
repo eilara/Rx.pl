@@ -130,3 +130,28 @@ sub take {
 # anamorphisms -----------------------------------------------------------------
 
 1;
+
+
+__END__
+
+
+sub empty {
+    my ($class, $value) = @_;
+    Observable->create(sub {
+        my ($observer, $scheduler) = @_;
+        $observer->on_complete;
+    });
+}
+
+sub never {
+    my ($class) = @_;
+    Observable->create(sub {});
+}
+
+sub throw {
+    my ($class, $err) = @_;
+    Observable->create(sub {
+        my ($observer, $scheduler) = @_;
+        $observer->on_error($err);
+    });
+}
