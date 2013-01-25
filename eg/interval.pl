@@ -7,7 +7,8 @@ use FindBin qw($Bin);
 use lib "$Bin/../lib";
 use Reactive;
 
-my $o = Observable->interval(1000);
+my $o = Observable->interval(1000)
+                  ->merge( Observable->interval(500) );
 
 my $s = $o->subscribe(
     on_next     => sub { say "on_next=$_" },

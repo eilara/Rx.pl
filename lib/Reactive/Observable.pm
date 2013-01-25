@@ -6,12 +6,13 @@ use aliased 'Reactive::Disposable';
 use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
+use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
-use aliased 'Reactive::Observable::Concat';
 use aliased 'Reactive::Observable::Take';
-use aliased 'Reactive::Observable::FromStdIn';
+use aliased 'Reactive::Observable::Concat';
+use aliased 'Reactive::Observable::Merge';
 
 has scheduler => (
     is         => 'ro',
@@ -137,14 +138,6 @@ sub count {
     return Count->new(source => $self);
 }
 
-sub concat {
-    my ($self, $next_observable) = @_;
-    return Concat->new(
-        source          => $self,
-        next_observable => $next_observable, 
-    );
-}
-
 sub take {
     my ($self, $max) = @_;
     return Take->new(
@@ -154,6 +147,24 @@ sub take {
 }
 
 # anamorphisms -----------------------------------------------------------------
+
+# joining ----------------------------------------------------------------------
+
+sub concat {
+    my ($self, $next_observable) = @_;
+    return Concat->new(
+        source          => $self,
+        next_observable => $next_observable, 
+    );
+}
+
+sub merge {
+    my ($self, $observable) = @_;
+    return Merge->new(
+        o1 => $self,
+        o2 => $observable, 
+    );
+}
 
 1;
 
