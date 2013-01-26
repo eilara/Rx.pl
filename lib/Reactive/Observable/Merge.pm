@@ -3,10 +3,10 @@ package Reactive::Observable::Merge;
 use Moose;
 use aliased 'Reactive::Disposable::Wrapper';
 
-extends 'Reactive::Observable';
-
 has o1 => (is => 'ro', required => 1);
 has o2 => (is => 'ro', required => 1);
+
+extends 'Reactive::Observable';
 
 sub run {
     my ($self, $observer) = @_;

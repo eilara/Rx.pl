@@ -1,7 +1,5 @@
 package Reactive::Observable::Map;
 
-use strict;
-use warnings;
 use Moose;
 
 extends 'Reactive::Observable::Wrapper';
@@ -18,8 +16,6 @@ sub build_wrapper_observer {
 
 package Reactive::Observable::Map::Observer;
 
-use strict;
-use warnings;
 use Moose;
 
 has projection => (is => 'ro', required => 1);

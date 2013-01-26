@@ -11,6 +11,7 @@ use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
+use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Concat';
 use aliased 'Reactive::Observable::Merge';
 
@@ -85,6 +86,16 @@ sub throw {
     });
 }
 
+sub from_list {
+    my ($class, @list) = @_;
+    return FromClosure->new(on_subscribe => sub {
+        my $observer = shift;
+        $observer->on_next($_) for @list;
+        $observer->on_complete;
+        return Disposable->empty;
+    });
+}
+
 # from time --------------------------------------------------------------------
 
 sub interval {
@@ -144,6 +155,11 @@ sub take {
         source => $self,
         max    => $max,
     );
+}
+
+sub distinct_changes {
+    my ($self) = @_;
+    return DistinctChanges->new(source => $self);
 }
 
 # anamorphisms -----------------------------------------------------------------

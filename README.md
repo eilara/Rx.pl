@@ -43,6 +43,8 @@ Then subscribe on this stream to sketch:
 TODO
 ----
 
+* from stdin should be hot
+
 * observable from SDL mouse/keyboard events, HTTP requests,
   sockets, lists 
 
@@ -58,6 +60,10 @@ https://github.com/richardszalay/raix/wiki/Reactive-Operators
 http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
 
 http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
+
+http://www.youtube.com/watch?v=ClHpkn_qxos
+
+https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as
 
 http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10_FlowControlExamples.cs
 
