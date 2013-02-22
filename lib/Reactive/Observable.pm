@@ -157,6 +157,14 @@ sub take {
     );
 }
 
+sub start_with {
+    my ($self, $observable) = @_;
+    return Concat->new(
+        source          => $observable,
+        next_observable => $self, 
+    );
+}
+
 sub distinct_changes {
     my ($self) = @_;
     return DistinctChanges->new(source => $self);

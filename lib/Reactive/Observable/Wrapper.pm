@@ -8,7 +8,7 @@ extends 'Reactive::Observable';
 has source => (is => 'ro', required => 1);
 
 sub build_wrapper_observer {
-    my ($self, $forward_to) = @_;
+    my ($self, %args) = @_;
     die 'Abstract';
 }
 

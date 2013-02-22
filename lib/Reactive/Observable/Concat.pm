@@ -27,7 +27,7 @@ sub on_complete {
     if ($self->next_observable) {
         my $next_observable = $self->next_observable;
         $self->next_observable(undef);
-        $self->parent->wrap->dispose;
+        $self->parent->dispose_wrapped;
         my $new_subscription = $next_observable->subscribe_observer($self);
         # parent could have completed because of the new subscription
         $self->parent->wrap($new_subscription)
