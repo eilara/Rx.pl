@@ -12,6 +12,7 @@ use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
 use aliased 'Reactive::Observable::DistinctChanges';
+use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Concat';
 use aliased 'Reactive::Observable::Merge';
 
@@ -168,6 +169,15 @@ sub start_with {
 sub distinct_changes {
     my ($self) = @_;
     return DistinctChanges->new(source => $self);
+}
+
+sub buffer {
+    my ($self, $size, $skip) = @_;
+    return Buffer->new(
+        source => $self,
+        size   => $size,
+        skip   => $skip || $size,
+    );
 }
 
 # anamorphisms -----------------------------------------------------------------
