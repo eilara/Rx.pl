@@ -15,6 +15,7 @@ use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Concat';
 use aliased 'Reactive::Observable::Merge';
+use aliased 'Reactive::Observable::CombineLatest';
 
 has scheduler => (
     is         => 'ro',
@@ -180,7 +181,7 @@ sub buffer {
     );
 }
 
-# anamorphisms -----------------------------------------------------------------
+# catamorphisms ----------------------------------------------------------------
 
 # joining ----------------------------------------------------------------------
 
@@ -195,6 +196,14 @@ sub concat {
 sub merge {
     my ($self, $observable) = @_;
     return Merge->new(
+        o1 => $self,
+        o2 => $observable, 
+    );
+}
+
+sub combine_latest {
+    my ($self, $observable) = @_;
+    return CombineLatest->new(
         o1 => $self,
         o2 => $observable, 
     );

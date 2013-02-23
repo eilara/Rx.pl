@@ -31,6 +31,7 @@ sub on_next {
     my $buffer = $self->buffer;
     push @$buffer, $value;
     return unless @$buffer == $self->size;
+
     my @buffer = @$buffer;
     my @value  = @buffer; # copy list
     @buffer = @buffer[-$self->skip..-1];

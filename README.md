@@ -23,7 +23,7 @@ An observable for a sketching program, fires with previous and current
 coordinates whenever mouse moved and button is down:
 
     $mouse_move_event->select(sub{ [$_->x, $_->y] })  
-                     ->start_with([320,200]) # initial mouse position
+                     ->start_with( Observable->once([320,200]) ) # initial mouse position
                      ->buffer(2, 1)
                      ->combine_latest(
                                          $up_event->select(sub { 0 })

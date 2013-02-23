@@ -1,24 +1,13 @@
 package Reactive::Observable::Merge;
 
 use Moose;
-use aliased 'Reactive::Disposable::Wrapper';
 
-has o1 => (is => 'ro', required => 1);
-has o2 => (is => 'ro', required => 1);
+extends 'Reactive::Observable::DoubleWrapper';
 
-extends 'Reactive::Observable';
-
-sub run {
-    my ($self, $observer) = @_;
-    my $subscription = Wrapper->new;
-    my $wrapper_observer = Reactive::Observable::Merge::Observer->new(
-        parent => $subscription,
-        target => $observer,
-    );
-    my $s1 = $self->o1->subscribe_observer($wrapper_observer);
-    my $s2 = $self->o2->subscribe_observer($wrapper_observer);
-    $subscription->wrap([$s1, $s2]);
-    return $subscription;
+sub build_wrapper_observer {
+    my ($self, %args) = @_;
+    return Reactive::Observable::Merge::Observer->
+        new(%args);
 }
 
 package Reactive::Observable::Merge::Observer;
