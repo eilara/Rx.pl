@@ -1,69 +1,202 @@
+
 Rx.pl
 =====
 
-Microsoft Reactive Extensions clone for Perl
+Microsoft Reactive Extensions Clone in Perl
 
-Install from CPAN:
-------------------
+Dependencies
+------------
 
 Moose, aliased, Coro, EV, AnyEvent
 
 Examples:
 ---------
 
+### Screensaver ###
+
 An observable that notifies after 10 seconds of mouse inactivity:
 
-            Observable->from_mouse_move
-    ->merge(Observable->from_mouse_click)
-    ->map(sub { 1 })
-    ->timeout(10->seconds, sub { 0 })
-    ->distinct_changes;
+    my $mouse_any = Observable->from_mouse_motion
+                              ->merge( Observable->from_mouse_press )
+                              ->merge( Observable->from_mouse_release );
 
-An observable for a sketching program, fires with previous and current
-coordinates whenever mouse moved and button is down:
+    my $start = $mouse_any->map(sub { 1 })
+                          ->unshift(1)
+                          ->timeout(10_000, sub { 1 });
 
-    $mouse_move_event->select(sub{ [$_->x, $_->y] })  
-                     ->start_with( Observable->once([320,200]) ) # initial mouse position
-                     ->buffer(2, 1)
-                     ->combine_latest(
-                                         $up_event->select(sub { 0 })
-                              ->merge( $down_event->select(sub { 1 }) ))
-                     ->grep(sub{ $_->[1] == 1 }) # only when mouse is down
-                     ->map(sub{ $_->[1] });      # we only want the coordinates
+Note how the observable pipeline translates low-level mouse events to
+high-level application events, i.e. start\_screensaver.
 
-Then subscribe on this stream to sketch:
+Then subscribe to this stream, to start the screensaver:
 
-    use List::Flatten::Recursive;
+    $start->subscribe(sub{ say 'starting screensaver!' });
 
-    $observable->subscribe(sub{
-        my ($x0, y0, $x1, $y1) = flat shift; # map { @$_ } @{$_[0]}
-        draw_line_between_two_points(x0, y0, x1, y1);
+Finally subscribe to the $mouse\_any stream, to a stop screensaver:
+
+    $mouse_any->subscribe(sub{ say 'stopping screensaver!' });
+
+
+### Sketch ###
+
+To create a mouse sketching program, we want to transform low-level mouse
+events in to a single application level event called draw. The draw handler
+requires a pair of points. It will draw a line between them. We need to
+make sure it gets called on the correct events, and with the correct args:
+
+- when mouse is moved, and button is pressed, we want an event, with
+  the pair of points being the start and end positions of the mouse
+
+- on mouse press followed by release we want an event, with the pair of
+  points being equal, so we can draw a point
+
+Here is how we build the $sketch observable stream:
+
+    $button_press   = Observable->from_mouse_press  ->map(sub{ 1 });
+    $button_release = Observable->from_mouse_release->map(sub{ 0 });
+    $button_stream  = $button_press->merge($button_release)->unshift(0);
+
+    $motion_stream = $Observable->from_mouse_motion
+                                ->map(sub{ [$_->x, $_->y] })
+                                ->unshift( [$window->get_pointer] ));
+
+    $sketch = $button_stream->combine_latest($motion_stream)
+                            ->buffer(2, 1)
+                            ->grep(sub{ $_->[1]->[0] })
+                            ->map(sub{ [map { @{$_->[1]} } @$_]});
+
+When you subscribe, you will get point pairs exactly as per the spec above,
+and all you need to do is draw a line:
+
+    $sketch->subscribe(sub{
+        my ($x0, y0, $x1, $y1) = @{$_[0]};
+        draw_line_between_two_points($x0, $y0, $x1, $y1);
     })
+
+Lets go over how the $sketch observable stream is built, going from
+low-level to high-level events, and showing the marble diagrams for the
+combinators applied:
+
+    $button_press   = Observable->from_mouse_press  ->map(sub{ 1 });
+    $button_release = Observable->from_mouse_release->map(sub{ 0 });
+
+This gives us 2 streams, one for each mouse event.
+
+    $button_stream  = $button_press->merge($button_release)->unshift(0);
+
+We merge them, and start the event with 0, assuming the user starts with
+button released. No way in Gtk actually to check this, but lets assume.
+
+Here is how a pair of mouse clicks would look like in a marble diagram:
+
+      ---time-->
+    $button_press   ----------1--------------------1------------
+    $button_release ----------------0----------------------0----
+    merge           ----------1-----0--------------1-------0----
+    unshift(0)      0---------1-----0--------------1-------0----
+
+Another primitive stream of mouse events:    
+
+    $motion_stream = $Observable->from_mouse_motion
+                                ->map(sub{ [$_->x, $_->y] })
+                                ->unshift( [$window->get_pointer] ));
+
+We project it using _map_ to the mouse coordinates, which is all we need from
+the notification, and make sure it starts with the real initial location of the
+mouse.
+
+Now the crux of the biscuit, which we will go over line-by-line:
+
+    $sketch = $button_stream->combine_latest($motion_stream)
+
+_combine_\__latest_ passes every event from both streams. It attaches to each
+notification from one of the stream, the last received value from the other
+stream. So we now have a tuple of [button\_state, mouse\_position] fired
+on each button press/release/mouse move.
+
+Here is the marble diagram for a button press, followed by some mouse motion
+and a button release, as we would get it after piping through
+_combine_\__latest_. Pi is i-th position of mouse.
+
+      ---time-->
+    $button_stream -0--------1-----------------------------0-----
+    $motion_stream ---P1---------------P2--------P3--------------
+    combine_latest -[0,P1]-[1,P1]----[1,P2]----[1,P3]----[0,P3]--
+
+                            ->buffer(2, 1)
+
+Buffer(2,1) buffers every pair of events from _combine_\__latest_, and
+shifts the buffer one event to the right. Thus we get a pair of the
+latest 2 notifications. Here is the stream above piped though _buffer_:
+
+      ---time-->
+
+    combine_latest -[0,P1]-[1,P1]----[1,P2]----[1,P3]----[0,P3]--
+                          [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3], 
+    buffer(2,1)    ------- [1,P1],---[1,P2],---[1,P3],---[0,P3],-
+                          ]         ]         ]         ]
+
+Turns out the if we want to draw points on move when pressed + on press, we
+are only interested in those notifications which end in a mouse press state.
+
+    [[0,Pi],[0,Pj]] - don't draw, mouse is being moved without button press
+    [[1,Pi],[1,Pj]] - draw a line [Pi,Pj] because user is sketching
+    [[0,Pi],[1,Pi]] - draw a point, which is just the line [Pi,Pi]
+    [[1,Pi],[0,Pi]] - mouse being released, don't draw anything
+
+We can find the notifications we need using grep:
+
+                            ->grep(sub{ $_->[1]->[0] })
+
+Finally we map the notifications into a pair of x,y coordinates, throwing
+away the mouse button state, and flattening them, so that they are ready to
+be sent to the sketch subscribers:
+
+                            ->map(sub{ [map { @{$_->[1]} } @$_]});
+                            
+Leading to the following marble diagram:
+
+                          [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3], 
+    buffer(2,1)    ------- [1,P1],---[1,P2],---[1,P3],---[0,P3],-
+                          ]         ]         ]         ]
+    grep + map     -------[P1,P1]---[P1,P2]---[P2,P3]------------
+
+And here is the entire pipeline in one big image, showing a short
+sketch session, from mouse events to the sketch event:
+
+![Sketch Marble Diagram](doc/sketch_marble_diagram.png)
+
 
 TODO
 ----
 
 * from stdin should be hot
 
+* subscriptions in void context are forever
+
+* "K 1" instead of "sub{ 1 }"
+
+* Void and "KVoid" instead of 1 and "sub { 1 }"
+
+* more perlish- shift/unshift push/pop instead of concat/start_with/etc.
+
 * observable from SDL mouse/keyboard events, HTTP requests,
   sockets, lists 
 
 * demos- autocomplete with some terminal toolkit and menus, drag&drop,
   inactivity timer, perl news feed, perl activity graph, time flies,
-  online spellchecker, image download robot, proxy
+  online spellchecker, image download robot, proxy, konami code, sketch 
+  with bleeding ink, erase, color change, etc.
 
 LINKS
 -----
 
-https://github.com/richardszalay/raix/wiki/Reactive-Operators
-
-http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
-
-http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
-
-http://www.youtube.com/watch?v=ClHpkn_qxos
-
-https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as
-
-http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10_FlowControlExamples.cs
+    https://github.com/richardszalay/raix/wiki/Reactive-Operators
+    http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
+    http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
+    http://www.youtube.com/watch?v=ClHpkn_qxos
+    https://github.com/Reactive-Extensions/RxJS/wiki/Observable
+    https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as
+    http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10_FlowControlExamples.cs
+    https://github.com/Reactive-Extensions/RxJS-Examples
+    https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
 

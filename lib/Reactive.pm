@@ -10,7 +10,8 @@ use aliased 'Reactive::Observable';
 use base 'Exporter';
 our @EXPORT=qw(Observable);
 
-sub run { EV::loop }
+sub loop   { EV::loop }
+sub unloop { EV::unloop }
 
 1;
 
