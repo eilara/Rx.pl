@@ -122,6 +122,8 @@ _combine_\__latest_. Pi is i-th position of mouse.
     $motion_stream ---P1---------------P2--------P3--------------
     combine_latest -[0,P1]-[1,P1]----[1,P2]----[1,P3]----[0,P3]--
 
+However, we are interested in pairs of points:    
+
                             ->buffer(2, 1)
 
 Buffer(2,1) buffers every pair of events from _combine_\__latest_, and
@@ -190,13 +192,13 @@ TODO
 LINKS
 -----
 
-    https://github.com/richardszalay/raix/wiki/Reactive-Operators
-    http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
-    http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
-    http://www.youtube.com/watch?v=ClHpkn_qxos
-    https://github.com/Reactive-Extensions/RxJS/wiki/Observable
-    https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as
-    http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10_FlowControlExamples.cs
-    https://github.com/Reactive-Extensions/RxJS-Examples
-    https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
+(https://github.com/richardszalay/raix/wiki/Reactive-Operators)
+(http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm)
+(http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm)
+(http://www.youtube.com/watch?v=ClHpkn_qxos)
+(https://github.com/Reactive-Extensions/RxJS/wiki/Observable)
+(https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as)
+(http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10_FlowControlExamples.cs)
+(https://github.com/Reactive-Extensions/RxJS-Examples)
+(https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq)
 
