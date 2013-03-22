@@ -35,7 +35,6 @@ sub run {
             return $duration->($_)
         } else {
             $observer->on_complete;
-#???$observer = undef;
             return undef;
         }
     });
