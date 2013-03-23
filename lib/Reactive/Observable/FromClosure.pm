@@ -1,7 +1,6 @@
 package Reactive::Observable::FromClosure;
 
 use Moose;
-use aliased 'Reactive::Disposable';
 
 extends 'Reactive::Observable';
 

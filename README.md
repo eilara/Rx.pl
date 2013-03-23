@@ -214,3 +214,8 @@ https://github.com/Reactive-Extensions/RxJS-Examples
 https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
 
 
+PACKAGES
+--------
+
+    Disposable
+        Wrapper

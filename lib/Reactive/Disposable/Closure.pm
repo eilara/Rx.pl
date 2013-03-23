@@ -4,12 +4,9 @@ use Moose;
 
 has cleanup => (is => 'rw', default => sub { sub{} });
 
-extends 'Reactive::Disposable';
-
-before dispose => sub {
+sub DEMOLISH {
     my $self = shift;
     $self->{cleanup}->();
-    $self->{cleanup} = undef;
 };
 
 1;

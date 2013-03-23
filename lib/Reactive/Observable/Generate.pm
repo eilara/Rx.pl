@@ -21,7 +21,7 @@ sub run {
 
     local $_ = $state;
     my $init_duration = $duration->($_);
-    my $disposable = $self->schedule_at($init_duration, sub {
+    my $disposable = $self->schedule_recursive($init_duration, sub {
         local $_ = $state;
         if ($is_first) { $is_first = 0 }
                   else { $state = $action->($_) }

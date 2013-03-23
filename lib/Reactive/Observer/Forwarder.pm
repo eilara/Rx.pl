@@ -3,9 +3,6 @@ package Reactive::Observer::Forwarder;
 use Moose;
 
 has target => (is => 'ro', required => 1);
-has parent => (is => 'ro', required => 1, weak_ref => 1);
-
-extends 'Reactive::Disposable';
 
 sub on_next {
     my ($self, $value) = @_;
@@ -26,11 +23,10 @@ sub on_error {
     $self->dispose;
 }
 
-before dispose => sub {
+sub dispose {
     my $self = shift;
     $self->{target} = undef;
-    $self->{parent} = undef;
-};
+}
 
 1;
 

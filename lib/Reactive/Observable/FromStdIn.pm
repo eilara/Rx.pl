@@ -2,7 +2,7 @@ package Reactive::Observable::FromStdIn;
 
 use Moose;
 use AnyEvent;
-use Reactive::Disposable::Handle;
+use Reactive::Disposable::Wrapper;
 
 extends 'Reactive::Observable';
 
@@ -14,7 +14,7 @@ sub run {
         chomp $line;
         $observer->on_next($line);
     };
-    return Reactive::Disposable::Handle->new(handle => $handle);
+    return Reactive::Disposable::Wrapper->new(wrap => $handle);
 }
 
 

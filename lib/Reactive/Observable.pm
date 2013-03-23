@@ -2,7 +2,6 @@ package Reactive::Observable;
 
 use Moose;
 use Reactive::Scheduler::Coro;
-use aliased 'Reactive::Disposable';
 use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
@@ -17,11 +16,7 @@ use aliased 'Reactive::Observable::Concat';
 use aliased 'Reactive::Observable::Merge';
 use aliased 'Reactive::Observable::CombineLatest';
 
-has scheduler => (
-    is         => 'ro',
-    lazy_build => 1,
-    handles    => [qw(schedule_now schedule_at)],
-);
+has scheduler => (is => 'ro', lazy_build => 1);
 
 sub _build_scheduler { Reactive::Scheduler::Coro->new }
 
@@ -47,7 +42,7 @@ sub once {
         my $observer = shift;
         $observer->on_next($value);
         $observer->on_complete;
-        return Disposable->empty;
+        return undef;
     });
 }
 
@@ -59,7 +54,7 @@ sub range {
         my $to   = $from + $size;
         while ($i < $to) { $observer->on_next($i++) }
         $observer->on_complete;
-        return Disposable->empty;
+        return undef;
     });
 }
 
@@ -68,14 +63,14 @@ sub empty {
     return FromClosure->new(on_subscribe => sub {
         my $observer = shift;
         $observer->on_complete;
-        return Disposable->empty;
+        return undef;
     });
 }
 
 sub never {
     my ($class) = @_;
     return FromClosure->new(on_subscribe => sub {
-        return Disposable->empty;
+        return undef;
     });
 }
 
@@ -84,7 +79,7 @@ sub throw {
     return FromClosure->new(on_subscribe => sub {
         my $observer = shift;
         $observer->on_error($err);
-        return Disposable->empty;
+        return undef;
     });
 }
 
@@ -94,7 +89,7 @@ sub from_list {
         my $observer = shift;
         $observer->on_next($_) for @list;
         $observer->on_complete;
-        return Disposable->empty;
+        return undef;
     });
 }
 
