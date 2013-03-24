@@ -6,20 +6,22 @@ use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
-use aliased 'Reactive::Observable::Map';
-use aliased 'Reactive::Observable::Grep';
+#use aliased 'Reactive::Observable::Map';
+#use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
-use aliased 'Reactive::Observable::Take';
-use aliased 'Reactive::Observable::DistinctChanges';
-use aliased 'Reactive::Observable::Buffer';
+#use aliased 'Reactive::Observable::Take';
+#use aliased 'Reactive::Observable::DistinctChanges';
+#use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Concat';
-use aliased 'Reactive::Observable::Merge';
-use aliased 'Reactive::Observable::CombineLatest';
+#use aliased 'Reactive::Observable::Merge';
+#use aliased 'Reactive::Observable::CombineLatest';
 
-has scheduler => (is => 'ro', lazy_build => 1);
+has scheduler => (is => 'ro', lazy_build => 1, handles =>
+                 [qw(schedule_recursive now)]);
 
 sub _build_scheduler { Reactive::Scheduler::Coro->new }
 
+# subscribe with a set of handlers
 sub subscribe {
     my ($self, %handlers) = @_;
     $handlers{$_} ||= sub {} foreach qw(on_next on_error on_complete);
@@ -27,6 +29,7 @@ sub subscribe {
     return $self->subscribe_observer($observer);
 }
 
+# subscribe with an observer
 sub subscribe_observer {
     my ($self, $observer) = @_;
     return $self->run($observer);
@@ -143,7 +146,7 @@ sub grep {
 
 sub count {
     my ($self) = @_;
-    return Count->new(source => $self);
+    return Count->new(wrap => $self);
 }
 
 sub take {
@@ -183,8 +186,8 @@ sub buffer {
 sub concat {
     my ($self, $next_observable) = @_;
     return Concat->new(
-        source          => $self,
-        next_observable => $next_observable, 
+        o1 => $self,
+        o2 => $next_observable, 
     );
 }
 

@@ -25,7 +25,7 @@ is $next[1], 1, '2nd value';
 # 4 more notifications happen in 1600 msec
 advance_and_check_event_count 1600 => 6;
 
-$s = undef;
+undef $s;
 
 # no notifications after unsubscribe
 advance_and_check_event_count 2000 => 6;

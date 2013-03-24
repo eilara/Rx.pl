@@ -44,4 +44,10 @@ sub advance_by {
     $self->{now} = $max;
 }
 
+sub restart {
+    my $self = shift;
+    $self->actions([]);
+    $self->now(0);
+}
+
 1;

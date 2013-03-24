@@ -1,28 +1,23 @@
 package Reactive::Observable::Wrapper;
 
 use Moose;
-use aliased 'Reactive::Disposable::Wrapper';
+use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
+
+has wrap => (is => 'rw', required => 1);
 
 extends 'Reactive::Observable';
 
-has source => (is => 'ro', required => 1);
-
-sub build_wrapper_observer {
-    my ($self, %args) = @_;
-    die 'Abstract';
-}
+sub observer_wrapper_package { die 'Abstract' }
 
 sub run {
-    my ($self, $observer) = @_;
-    my $subscription = Wrapper->new;
-    my $wrapper_observer = $self->build_wrapper_observer(
-        parent    => $subscription,
-        target    => $observer,
+    my ($self, $observer)  = @_;
+    my $observer_pkg       = ref($self). '::Observer';
+    my $disposable_wrapper = DisposableWrapper->new;
+    my $disposable         = $self->wrap->subscribe_observer(
+       $observer_pkg->new(wrap => $observer)
     );
-    my $source_subscription = $self->source
-                                   ->subscribe_observer($wrapper_observer);
-    $subscription->wrap($source_subscription);
-    return $subscription;
+    $disposable_wrapper->wrap($disposable);
+    return $disposable_wrapper;
 }
 
 1;

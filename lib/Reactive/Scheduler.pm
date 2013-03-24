@@ -25,7 +25,7 @@ sub _schedule_recursive {
         if (defined $new_at) {
             $self->_schedule_recursive($new_at, $action, $disposable);
         } else {
-            $disposable->unwrap;
+            $disposable->unwrap if $disposable;
         }
     };
     my $wrap = $self->schedule_once($at, $callback);

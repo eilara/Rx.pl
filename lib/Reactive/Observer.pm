@@ -13,22 +13,17 @@ sub on_next {
 sub on_complete {
     my $self = shift;
     $self->{handlers}->{on_complete}->();
-    $self->dispose;
+    $self->unwrap;
 }
 
 sub on_error {
     my ($self, $err) = @_;
     local $_ = $err;
     $self->{handlers}->{on_error}->($_);
-    $self->dispose;
+    $self->unwrap;
 }
 
-sub dispose {
-    my $self = shift;
-    my $handlers = $self->{handlers};
-    $handlers->{$_} = sub { die "broken observer: $_" }
-        foreach qw(on_next on_error on_complete);
-}
+sub unwrap { delete shift->{handlers} }
 
 1;
 

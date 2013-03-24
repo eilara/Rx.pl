@@ -13,12 +13,17 @@ our @EXPORT=qw(
     $scheduler
     advance_and_check_event_count
     advance_and_check_event_counts
-    subscribe run_loop
+    subscribe restart
 );
 
 our (@next, @complete, @error);
 
 our $scheduler = Scheduler->new;
+
+sub restart {
+    $scheduler->restart;
+    @next = (); @complete = (); @error = ();
+}
 
 sub advance_and_check_event_counts {
     my (@events) = @_;
