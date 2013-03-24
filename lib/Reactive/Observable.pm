@@ -6,15 +6,15 @@ use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
-#use aliased 'Reactive::Observable::Map';
-#use aliased 'Reactive::Observable::Grep';
+use aliased 'Reactive::Observable::Map';
+use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
-#use aliased 'Reactive::Observable::DistinctChanges';
+use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
 use aliased 'Reactive::Observable::Merge';
-#use aliased 'Reactive::Observable::CombineLatest';
+use aliased 'Reactive::Observable::CombineLatest';
 
 has scheduler => (is => 'ro', lazy_build => 1, handles =>
                  [qw(schedule_recursive now)]);
@@ -130,18 +130,12 @@ sub from_stdin { return FromStdIn->new }
 
 sub map {
     my ($self, $projection) = @_;
-    return Map->new(
-        source     => $self,
-        projection => $projection, 
-    );
+    return Map->new(wrap => $self, projection => $projection);
 }
 
 sub grep {
     my ($self, $predicate) = @_;
-    return Grep->new(
-        source    => $self,
-        predicate => $predicate, 
-    );
+    return Grep->new(wrap => $self, predicate => $predicate);
 }
 
 sub count {
@@ -166,7 +160,7 @@ sub unshift {
 
 sub distinct_changes {
     my ($self) = @_;
-    return DistinctChanges->new(source => $self);
+    return DistinctChanges->new(wrap => $self);
 }
 
 sub buffer {

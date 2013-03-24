@@ -11,11 +11,11 @@ my $fire_at = sub {
 };
 
 # firing in order: 1, 4, 2, 3, 5
-my $o1  =          $fire_at->(1000, 1)
-          ->concat($fire_at->(1000, 2))
-          ->concat($fire_at->(1000, 3));
-my $o2  =          $fire_at->(1100, 4)
-          ->concat($fire_at->(2000, 5));
+my $o1  =        $fire_at->(1000, 1)
+          ->push($fire_at->(1000, 2))
+          ->push($fire_at->(1000, 3));
+my $o2  =        $fire_at->(1100, 4)
+          ->push($fire_at->(2000, 5));
 my $iut = $o1->combine_latest($o2);
 my $s   = subscribe $iut;
 

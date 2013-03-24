@@ -14,12 +14,9 @@ extends 'Reactive::Observer::Wrapper';
 
 sub on_complete {
     my $self = shift;
-    if ($self->num_completed == 0) {
-        $self->num_completed(1);
-    } else {
-        $self->wrap->on_complete;
-        $self->unwrap;
-    }
+    return $self->num_completed(1) if $self->num_completed == 0;
+    $self->wrap->on_complete;
+    $self->unwrap;
 }
 
 1;

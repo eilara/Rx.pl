@@ -6,13 +6,10 @@ extends 'Reactive::Observable::Wrapper';
 
 has projection => (is => 'ro', required => 1);
 
-sub build_wrapper_observer {
-    my ($self, %args) = @_;
-    return Reactive::Observable::Map::Observer->new(
-        %args,
-        projection => $self->projection,
-    );
-}
+augment observer_args => sub {
+    my ($self) = @_;
+    return (projection => $self->projection, inner(@_));
+};
 
 package Reactive::Observable::Map::Observer;
 
@@ -20,13 +17,13 @@ use Moose;
 
 has projection => (is => 'ro', required => 1);
 
-extends 'Reactive::Observer::Forwarder';
+extends 'Reactive::Observer::Wrapper';
 
 sub on_next {
     my ($self, $value) = @_;
     local $_ = $value;
     my $new_value = $self->projection->($_);
-    $self->target->on_next($new_value);
+    $self->wrap->on_next($new_value);
 }
 
 1;
