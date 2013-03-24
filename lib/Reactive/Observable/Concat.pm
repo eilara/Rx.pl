@@ -5,22 +5,17 @@ use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
 has [qw(o1 o2)] => (is => 'ro', required => 1);
 
-extends 'Reactive::Observable';
+extends 'Reactive::Observable::Composite';
 
-sub run {
-    my ($self, $observer)  = @_;
-    my ($o1, $o2)          = ($self->o1, $self->o2);
-    my $disposable_wrapper = DisposableWrapper->new;
-    my $observer_pkg       = __PACKAGE__. '::Observer';
-    my $disposable         = $o1->subscribe_observer(
-       $observer_pkg->new(
-           wrap               => $observer,
-           next_observable    => $o2,
-           disposable_wrapper => $disposable_wrapper,
-       )
-    );
-    $disposable_wrapper->wrap($disposable);
-    return $disposable_wrapper;
+sub wrap { shift->o1 } # initial observable
+
+sub observer_args {
+    my ($self, $observer, $disposable_wrapper) = @_;
+    return (
+       wrap               => $observer,
+       next_observable    => $self->o2,
+       disposable_wrapper => $disposable_wrapper,
+   );
 }
 
 package Reactive::Observable::Concat::Observer;
