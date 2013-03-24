@@ -7,14 +7,10 @@ has skip   => (is => 'ro', required => 1);
 
 extends 'Reactive::Observable::Wrapper';
 
-sub build_wrapper_observer {
-    my ($self, %args) = @_;
-    return Reactive::Observable::Buffer::Observer->new(
-        %args,
-        size => $self->size,
-        skip => $self->skip,
-    );
-}
+augment observer_args => sub {
+    my ($self) = @_;
+    return (size => $self->size, skip => $self->skip, inner(@_));
+};
 
 package Reactive::Observable::Buffer::Observer;
 
@@ -24,7 +20,7 @@ has size   => (is => 'ro', required => 1);
 has skip   => (is => 'ro', required => 1);
 has buffer => (is => 'rw', default  => sub { [] });
 
-extends 'Reactive::Observer::Forwarder';
+extends 'Reactive::Observer::Wrapper';
 
 sub on_next {
     my ($self, $value) = @_;
@@ -36,7 +32,7 @@ sub on_next {
     my @value  = @buffer; # copy list
     @buffer = @buffer[-$self->skip..-1];
     $self->buffer(\@buffer);        
-    $self->target->on_next(\@value);
+    $self->wrap->on_next(\@value);
 }
 
 1;

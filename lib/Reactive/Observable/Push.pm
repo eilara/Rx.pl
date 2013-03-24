@@ -1,18 +1,16 @@
 package Reactive::Observable::Push;
 
 use Moose;
-use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
 has [qw(o1 o2)] => (is => 'ro', required => 1);
 
 extends 'Reactive::Observable::Composite';
 
-sub wrap { shift->o1 } # initial observable
+sub initial_subscriptions { (shift->o1) }
 
 augment observer_args => sub {
     my ($self, $observer, $disposable_wrapper) = @_;
     return (
-       wrap               => $observer,
        next_observable    => $self->o2,
        disposable_wrapper => $disposable_wrapper,
        inner(@_),

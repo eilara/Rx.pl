@@ -4,15 +4,18 @@ use Test::More;
 use Reactive;
 use Reactive::Test::ObservableFixture;
 
-my $o1  = Observable->timer(2000, $scheduler);
-my $o2  = Observable->timer(3000, $scheduler);
-my $iut = $o1->merge($o2);
-my $s   = subscribe $iut;
+my $s = subscribe 
+          Observable->timer(2000, $scheduler)
+ ->merge( Observable->timer(3000, $scheduler) )
+ ->merge( Observable->interval(1600, $scheduler) );
 
 advance_and_check_event_counts
     [1001 => 0   ],
-    [1000 => 1   ],
-    [1000 => 2, 1];
+    [ 600 => 1   ],
+    [ 400 => 2   ],
+    [ 998 => 2   ],
+    [   2 => 3   ],
+    [ 200 => 4   ];
 
 done_testing;
 

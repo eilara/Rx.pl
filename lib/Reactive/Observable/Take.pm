@@ -2,9 +2,9 @@ package Reactive::Observable::Take;
 
 use Moose;
 
-extends 'Reactive::Observable::Wrapper';
-
 has max => (is => 'ro', required => 1);
+
+extends 'Reactive::Observable::Wrapper';
 
 augment observer_args => sub {
     my ($self, $observer, $disposable_wrapper) = @_;
@@ -32,7 +32,9 @@ sub on_next {
     $self->taken($taken);
     if ($taken >= $self->max) {
         $self->on_complete;
-        $self->disposable_wrapper->unwrap;
+        # which could have disappeared during during on_complete
+        $self->disposable_wrapper->unwrap
+            if $self->disposable_wrapper;
     }
 }
 

@@ -11,9 +11,9 @@ use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
 #use aliased 'Reactive::Observable::DistinctChanges';
-#use aliased 'Reactive::Observable::Buffer';
+use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
-#use aliased 'Reactive::Observable::Merge';
+use aliased 'Reactive::Observable::Merge';
 #use aliased 'Reactive::Observable::CombineLatest';
 
 has scheduler => (is => 'ro', lazy_build => 1, handles =>
@@ -160,10 +160,8 @@ sub unshift {
     my $observable = ($ref && $thing->isa(__PACKAGE__))?
         $thing:
         ref($self)->from_list($thing, @rest);
-    return Push->new(
-        o1 => $observable,
-        o2 => $self, 
-    );
+    # unshift is reverse of push
+    return Push->new(o1 => $observable, o2 => $self);
 }
 
 sub distinct_changes {
@@ -174,9 +172,9 @@ sub distinct_changes {
 sub buffer {
     my ($self, $size, $skip) = @_;
     return Buffer->new(
-        source => $self,
-        size   => $size,
-        skip   => $skip || $size,
+        wrap => $self,
+        size => $size,
+        skip => $skip || $size,
     );
 }
 
@@ -185,27 +183,18 @@ sub buffer {
 # joining ----------------------------------------------------------------------
 
 sub push {
-    my ($self, $next_observable) = @_;
-    return Push->new(
-        o1 => $self,
-        o2 => $next_observable, 
-    );
+    my ($self, $observable) = @_;
+    return Push->new(o1 => $self, o2 => $observable);
 }
 
 sub merge {
     my ($self, $observable) = @_;
-    return Merge->new(
-        o1 => $self,
-        o2 => $observable, 
-    );
+    return Merge->new(o1 => $self, o2 => $observable);
 }
 
 sub combine_latest {
     my ($self, $observable) = @_;
-    return CombineLatest->new(
-        o1 => $self,
-        o2 => $observable, 
-    );
+    return CombineLatest->new(o1 => $self, o2 => $observable);
 }
 
 1;

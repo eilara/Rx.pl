@@ -10,8 +10,8 @@ sub build_wrapper_observer {
         new(%args);
 }
 
-sub map_o1 { pop->map(sub{ [1, $_] }) }
-sub map_o2 { pop->map(sub{ [2, $_] }) }
+sub map_o1 { shift->o1->map(sub{ [1, $_] }) }
+sub map_o2 { shift->o2->map(sub{ [2, $_] }) }
 
 package Reactive::Observable::CombineLatest::Observer;
 
