@@ -6,10 +6,10 @@ has wrap => (is => 'rw', required => 1);
 
 extends 'Reactive::Observable::Composite';
 
-sub observer_args {
-    my ($self, $observer, $disposable_wrapper) = @_;
-    return (wrap => $observer);
-}
+augment observer_args => sub {
+    my ($self, $observer) = @_;
+    return (wrap => $observer, inner(@_));
+};
 
 1;
 

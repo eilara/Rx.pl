@@ -20,7 +20,7 @@ sub run {
 
 sub observer_args {
     my ($self, $observer, $disposable_wrapper) = @_;
-    return ();
+    return (inner(@_));
 }
 
 1;

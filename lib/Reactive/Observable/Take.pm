@@ -6,31 +6,33 @@ extends 'Reactive::Observable::Wrapper';
 
 has max => (is => 'ro', required => 1);
 
-sub build_wrapper_observer {
-    my ($self, %args) = @_;
-    return Reactive::Observable::Take::Observer->new(
-        %args,
-        max => $self->max,
+augment observer_args => sub {
+    my ($self, $observer, $disposable_wrapper) = @_;
+    return (
+        max                => $self->max,
+        disposable_wrapper => $disposable_wrapper,
+        inner(@_),
     );
-}
+};
 
 package Reactive::Observable::Take::Observer;
 
 use Moose;
 
-has max   => (is => 'ro', required => 1);
-has taken => (is => 'rw', default  => 0);
+has max                => (is => 'ro', required => 1);
+has taken              => (is => 'rw', default  => 0);
+has disposable_wrapper => (is => 'ro', required => 1, weak_ref => 1);
 
-extends 'Reactive::Observer::Forwarder';
+extends 'Reactive::Observer::Wrapper';
 
 sub on_next {
     my ($self, $value) = @_;
-    $self->target->on_next($value);
+    $self->wrap->on_next($value);
     my $taken = $self->taken + 1;
     $self->taken($taken);
     if ($taken >= $self->max) {
-        $self->parent->wrap(undef);
         $self->on_complete;
+        $self->disposable_wrapper->unwrap;
     }
 }
 

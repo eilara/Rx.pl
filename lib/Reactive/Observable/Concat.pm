@@ -9,14 +9,15 @@ extends 'Reactive::Observable::Composite';
 
 sub wrap { shift->o1 } # initial observable
 
-sub observer_args {
+augment observer_args => sub {
     my ($self, $observer, $disposable_wrapper) = @_;
     return (
        wrap               => $observer,
        next_observable    => $self->o2,
        disposable_wrapper => $disposable_wrapper,
+       inner(@_),
    );
-}
+};
 
 package Reactive::Observable::Concat::Observer;
 

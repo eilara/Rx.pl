@@ -9,7 +9,7 @@ use aliased 'Reactive::Observable::FromStdIn';
 #use aliased 'Reactive::Observable::Map';
 #use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
-#use aliased 'Reactive::Observable::Take';
+use aliased 'Reactive::Observable::Take';
 #use aliased 'Reactive::Observable::DistinctChanges';
 #use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Concat';
@@ -151,17 +151,18 @@ sub count {
 
 sub take {
     my ($self, $max) = @_;
-    return Take->new(
-        source => $self,
-        max    => $max,
-    );
+    return Take->new(wrap => $self, max => $max);
 }
 
 sub start_with {
-    my ($self, $observable) = @_;
+    my ($self, $thing, @rest) = @_;
+    my $ref = ref $thing;
+    my $observable = ($ref && $thing->isa(__PACKAGE__))?
+        $thing:
+        ref($self)->from_list($thing, @rest);
     return Concat->new(
-        source          => $observable,
-        next_observable => $self, 
+        o1 => $observable,
+        o2 => $self, 
     );
 }
 
