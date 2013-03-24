@@ -12,7 +12,7 @@ use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
 #use aliased 'Reactive::Observable::DistinctChanges';
 #use aliased 'Reactive::Observable::Buffer';
-use aliased 'Reactive::Observable::Concat';
+use aliased 'Reactive::Observable::Push';
 #use aliased 'Reactive::Observable::Merge';
 #use aliased 'Reactive::Observable::CombineLatest';
 
@@ -154,13 +154,13 @@ sub take {
     return Take->new(wrap => $self, max => $max);
 }
 
-sub start_with {
+sub unshift {
     my ($self, $thing, @rest) = @_;
     my $ref = ref $thing;
     my $observable = ($ref && $thing->isa(__PACKAGE__))?
         $thing:
         ref($self)->from_list($thing, @rest);
-    return Concat->new(
+    return Push->new(
         o1 => $observable,
         o2 => $self, 
     );
@@ -184,9 +184,9 @@ sub buffer {
 
 # joining ----------------------------------------------------------------------
 
-sub concat {
+sub push {
     my ($self, $next_observable) = @_;
-    return Concat->new(
+    return Push->new(
         o1 => $self,
         o2 => $next_observable, 
     );

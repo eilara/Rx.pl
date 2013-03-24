@@ -7,7 +7,7 @@ use Reactive::Test::ObservableFixture;
 {
 my $o1  = Observable->timer(2000, $scheduler);
 my $o2  = Observable->timer(5000, $scheduler);
-my $iut = $o1->concat($o2);
+my $iut = $o1->push($o2);
 my $s   = subscribe $iut;
 
 advance_and_check_event_counts
@@ -24,7 +24,7 @@ restart;
 {
 my $o1  = Observable->interval(100, $scheduler);
 my $o2  = Observable->interval(222, $scheduler);
-my $iut = $o1->concat($o2);
+my $iut = $o1->push($o2);
 my $s   = subscribe $iut;
 
 advance_and_check_event_counts

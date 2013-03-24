@@ -1,4 +1,4 @@
-package Reactive::Observable::Concat;
+package Reactive::Observable::Push;
 
 use Moose;
 use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
@@ -19,7 +19,7 @@ augment observer_args => sub {
    );
 };
 
-package Reactive::Observable::Concat::Observer;
+package Reactive::Observable::Push::Observer;
 
 use Moose;
 

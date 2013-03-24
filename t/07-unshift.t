@@ -6,7 +6,7 @@ use Reactive::Test::ObservableFixture;
 
 {
 my $iut = Observable->from_list(1,2,4,8)
-                    ->start_with( Observable->once(0) );
+                    ->unshift( Observable->once(0) );
 
 my $s = subscribe $iut;
 
@@ -19,7 +19,7 @@ is $next[4], 8, 'last value';
 restart;
 
 {
-my $s = subscribe Observable->once(100)->start_with(1, 2, 3);
+my $s = subscribe Observable->once(100)->unshift(1, 2, 3);
 advance_and_check_event_count 0 => 4, 1;
 }
 
@@ -27,8 +27,8 @@ restart;
 
 {
 my $s = subscribe
-                  Observable->timer(5000, $scheduler)
-    ->start_with( Observable->timer(2000, $scheduler) );
+               Observable->timer(5000, $scheduler)
+    ->unshift( Observable->timer(2000, $scheduler) );
 advance_and_check_event_counts
     [1001 => 0   ],
     [1000 => 1   ],
@@ -41,8 +41,8 @@ advance_and_check_event_count 10000 => 1;
 restart;
 
 {
-my $s = subscribe               Observable->once(333)
-                  ->start_with( Observable->timer(2000, $scheduler) );
+my $s = subscribe            Observable->once(333)
+                  ->unshift( Observable->timer(2000, $scheduler) );
 advance_and_check_event_counts
     [1001 => 0   ],
     [1000 => 2,1 ],
