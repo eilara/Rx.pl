@@ -15,6 +15,7 @@ use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
 use aliased 'Reactive::Observable::Merge';
 use aliased 'Reactive::Observable::CombineLatest';
+use aliased 'Reactive::Observable::Subject';
 
 has scheduler => (is => 'ro', lazy_build => 1, handles =>
                  [qw(schedule_recursive now)]);
@@ -94,6 +95,11 @@ sub from_list {
         $observer->on_complete;
         return undef;
     });
+}
+
+sub subject {
+    my $class = shift;
+    return Subject->new;
 }
 
 # from time --------------------------------------------------------------------
