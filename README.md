@@ -192,6 +192,8 @@ TODO
 
 * more perlish- shift/unshift push/pop instead of concat/start\_with/etc.
 
+* add on complete for stdin on ctrl-d
+
 * observable from SDL mouse/keyboard events, HTTP requests,
   sockets, lists 
 
