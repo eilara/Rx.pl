@@ -7,12 +7,7 @@ Microsoft Reactive Extensions Clone in Perl
 Dependencies
 ------------
 
-Moose, aliased, Coro, EV, AnyEvent, Set::Object
-
-Optional
---------
-
-Cairo, Gtk3
+Moose, aliased, Coro, EV, AnyEvent, Set::Object, Cairo, Gtk3, EV::Glib, Glib
 
 Examples:
 ---------

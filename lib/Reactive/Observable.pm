@@ -24,7 +24,9 @@ sub _build_scheduler { Reactive::Scheduler::Coro->new }
 
 # subscribe with a set of handlers
 sub subscribe {
-    my ($self, %handlers) = @_;
+    my ($self, @handlers) = @_;
+    # sugar- if one sub only, then it is on_next handler
+    my %handlers = (@handlers == 1)? (on_next => $handlers[0]): @handlers;
     $handlers{$_} ||= sub {} foreach qw(on_next on_error on_complete);
     my $observer = Observer->new(handlers => {%handlers});
     return $self->subscribe_observer($observer);

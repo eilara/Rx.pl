@@ -34,12 +34,7 @@ $event_box ->signal_connect(motion_notify_event  => \&mouse_move );
 $event_box ->signal_connect(button_release_event => \&mouse_release );
 $event_box ->signal_connect(button_press_event   => \&mouse_press );
 
-
 $window->show_all;
-
-    my (@x) = $window->get_pointer;
-use Data::Dumper;print Dumper [@x];
-
 Reactive->loop;
 
 sub draw {
@@ -51,6 +46,7 @@ sub draw {
 
 sub mouse_press {
     my ($da, $event) = @_;
+    # sometimes Gtk sends here non-button events
     return FALSE unless $event->isa('Gtk3::Gdk::EventButton');
     my ($unknown, $ex, $ey, $state) = $event->window->get_pointer;
     draw_line($ex, $ey, $ex, $ey);
@@ -68,7 +64,6 @@ sub mouse_release {
 sub mouse_move {
     my ($da, $event) = @_;
     my ($unknown, $ex, $ey, $state) = $event->window->get_pointer;
-    print "$ex,$ey\n";
     return FALSE unless $is_pressed;
     draw_line($last_x, $last_y, $ex, $ey);
     ($last_x, $last_y) = ($ex, $ey);

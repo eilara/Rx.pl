@@ -34,9 +34,9 @@ sub init_stdin {
             chomp $line;
             $Subject->on_next($line);
         } else { # EOF received
-            $Subject->on_complete;
             $Subscription_Count = 0;
             undef $Handle;
+            $Subject->on_complete;
         }
     };
 }
