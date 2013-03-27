@@ -2,6 +2,7 @@ package Reactive::Observable::Subject;
 
 use Moose;
 use Set::Object qw(weak_set);
+use aliased 'Reactive::Disposable::Empty'   => 'EmptyDisposable';
 use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
 extends 'Reactive::Observable';
@@ -12,7 +13,7 @@ has observers => (is => 'ro', default => sub { weak_set });
 
 sub run {
     my ($self, $observer) = @_;
-    return undef unless $self->{observers};
+    return EmptyDisposable->new unless $self->{observers};
     my $disposable_wrapper = DisposableWrapper->new(wrap => $observer);
     $self->observers->insert($observer) if $self->{observers};
     return $disposable_wrapper;

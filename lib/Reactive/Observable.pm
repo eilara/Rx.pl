@@ -2,6 +2,7 @@ package Reactive::Observable;
 
 use Moose;
 use Reactive::Scheduler::Coro;
+use Reactive::Disposable::Empty;
 use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
@@ -16,6 +17,9 @@ use aliased 'Reactive::Observable::Push';
 use aliased 'Reactive::Observable::Merge';
 use aliased 'Reactive::Observable::CombineLatest';
 use aliased 'Reactive::Observable::Subject';
+use aliased 'Reactive::Observable::Delay';
+
+sub empty_disposable() { Reactive::Disposable::Empty->new }
 
 # when you subscribe forever, by calling subscribe()
 # in void context, we save the subscription forever
@@ -23,7 +27,7 @@ use aliased 'Reactive::Observable::Subject';
 my @Global_Subscriptions = ();
 
 has scheduler => (is => 'ro', lazy_build => 1, handles =>
-                 [qw(schedule_recursive now)]);
+                 [qw(schedule_recursive schedule_once now)]);
 
 sub _build_scheduler { Reactive::Scheduler::Coro->new }
 
@@ -56,7 +60,7 @@ sub once {
         my $observer = shift;
         $observer->on_next($value);
         $observer->on_complete;
-        return undef;
+        return empty_disposable;
     });
 }
 
@@ -68,7 +72,7 @@ sub range {
         my $to   = $from + $size;
         while ($i < $to) { $observer->on_next($i++) }
         $observer->on_complete;
-        return undef;
+        return empty_disposable;
     });
 }
 
@@ -77,14 +81,14 @@ sub empty {
     return FromClosure->new(on_subscribe => sub {
         my $observer = shift;
         $observer->on_complete;
-        return undef;
+        return empty_disposable;
     });
 }
 
 sub never {
     my ($class) = @_;
     return FromClosure->new(on_subscribe => sub {
-        return undef;
+        return empty_disposable;
     });
 }
 
@@ -93,7 +97,7 @@ sub throw {
     return FromClosure->new(on_subscribe => sub {
         my $observer = shift;
         $observer->on_error($err);
-        return undef;
+        return empty_disposable;
     });
 }
 
@@ -103,7 +107,7 @@ sub from_list {
         my $observer = shift;
         $observer->on_next($_) for @list;
         $observer->on_complete;
-        return undef;
+        return empty_disposable;
     });
 }
 
@@ -206,6 +210,13 @@ sub merge {
 sub combine_latest {
     my ($self, $observable) = @_;
     return CombineLatest->new(o1 => $self, o2 => $observable);
+}
+
+# time related -----------------------------------------------------------------
+
+sub delay {
+    my ($self, $delay) = @_;
+    return Delay->new(wrap => $self, delay => $delay);
 }
 
 1;
