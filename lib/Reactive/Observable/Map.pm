@@ -22,8 +22,9 @@ extends 'Reactive::Observer::Wrapper';
 sub on_next {
     my ($self, $value) = @_;
     local $_ = $value;
-    my $new_value = $self->projection->($_);
-    $self->wrap->on_next($new_value);
+    my @new_values = $self->projection->($_);
+    my $wrap = $self->wrap;
+    $wrap->on_next($_) for @new_values;
 }
 
 1;
