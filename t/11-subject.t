@@ -4,7 +4,6 @@ use Test::More;
 use Reactive;
 use Reactive::Test::ObservableFixture;
 
-{
 my $iut = Observable->subject;
 my $s1  = subscribe $iut;
 
@@ -28,7 +27,6 @@ $iut->on_complete;
 
 # both subscribers get their complete events
 advance_and_check_event_count 0 => 3, 2;
-}
 
 done_testing;
 
