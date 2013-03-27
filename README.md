@@ -183,9 +183,11 @@ sketch session, from mouse events to the sketch event:
 TODO
 ----
 
-* from stdin should be hot
+* skip/take while/until/last, first/last
+  select many, timestamp, let, max/min/sum/average, fold/scan,
+  repeat (resubscribes to self), retry, timeout, blocking foreach,
+  any, all, group by, do, delay
 
-* subscriptions in void context are forever
 
 * "K 1" instead of "sub{ 1 }"
 
@@ -193,15 +195,13 @@ TODO
 
 * more perlish- shift/unshift push/pop instead of concat/start\_with/etc.
 
-* add on complete for stdin on ctrl-d
-
 * observable from SDL mouse/keyboard events, HTTP requests,
-  sockets, lists 
+  sockets, filesystem events
 
 * demos- autocomplete with some terminal toolkit and menus, drag&drop,
   inactivity timer, perl news feed, perl activity graph, time flies,
   online spellchecker, image download robot, proxy, konami code, sketch 
-  with bleeding ink, erase, color change, etc.
+  with bleeding ink and smoothing, erase, color change, etc.
 
 LINKS
 -----
