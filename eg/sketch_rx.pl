@@ -30,34 +30,31 @@ $cairo     ->paint;
 $window    ->signal_connect(delete_event => sub { Reactive->unloop });
 $area      ->signal_connect(draw         => \&draw );
 
-my $button_press   = Observable->from_mouse_press($event_box)
-                               ->unshift(Observable->once(0));
-#                               ->map(sub{ 1 });
-#my $button_release = Observable->from_mouse_release($event_box)
-#                               ->map(sub{ 0 });
-#my $button_stream  = $button_press->merge($button_release);
-#                                  ->unshift(0);
-my $s=$button_press->subscribe(sub{
-    use Data::Dumper;print Dumper [@_];});
-use Data::Dumper;print Dumper $s;
-
-#my $motion_stream  = $Observable->from_mouse_motion($event_box)
-#                                ->map(sub{ [$_->x, $_->y] })
-#                                ->unshift( [$window->get_pointer] ));
-#
-#$sketch = $button_stream->combine_latest($motion_stream)
-#                        ->buffer(2, 1)
-#                        ->grep(sub{ $_->[1]->[0] })
-#                        ->map(sub{ [map { @{$_->[1]} } @$_]});
-#
-#
-#$sketch->subscribe(sub{
-#    my ($x0, y0, $x1, $y1) = @{$_[0]};
-#    draw_line($x0, $y0, $x1, $y1);
-#});
-
-
 $window->show_all;
+
+my $button_press   = Observable->from_mouse_press($event_box)
+                               ->map(sub{ 1 });
+my $button_release = Observable->from_mouse_release($event_box)
+                               ->map(sub{ 0 });
+
+my $button_stream  = $button_press->merge($button_release)
+                                  ->unshift(0);
+
+my $motion_stream  = Observable->from_mouse_motion($event_box)
+                               ->map(sub{ [$_->x, $_->y] })
+                               ->unshift( [$window->get_pointer] );
+
+my $sketch = $button_stream->combine_latest($motion_stream)
+                           ->buffer(2, 1)
+                           ->grep(sub{ $_->[1]->[0] })
+                           ->map(sub{ [map { @{$_->[1]} } @$_]});
+
+
+my $s = $sketch->subscribe(sub{
+    my ($x0, $y0, $x1, $y1) = @{$_[0]};
+    draw_line($x0, $y0, $x1, $y1);
+});
+
 Reactive->loop;
 
 sub draw {

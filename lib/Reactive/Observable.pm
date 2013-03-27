@@ -181,17 +181,14 @@ sub push {
 
 
 sub unshift {
-    my ($self, $observable) = @_;
-    return Push->new(o2 => $self, o1 => $observable);
+    my ($self, $thing, @rest) = @_;
+    my $ref = ref $thing;
+    my $observable = ($ref && UNIVERSAL::isa($thing, __PACKAGE__))?
+        $thing:
+        ref($self)->from_list($thing, @rest);
+    # unshift is reverse of push
+    return Push->new(o1 => $observable, o2 => $self);
 }
-#    my ($self, $thing, @rest) = @_;
-#    my $ref = ref $thing;
-#    my $observable = ($ref && $thing->isa(__PACKAGE__))?
-#        $thing:
-#        ref($self)->from_list($thing, @rest);
-#    # unshift is reverse of push
-#    return Push->new(o1 => $observable, o2 => $self);
-#}
 
 sub merge {
     my ($self, $observable) = @_;

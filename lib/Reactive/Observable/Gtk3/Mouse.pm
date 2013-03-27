@@ -15,10 +15,7 @@ sub run {
     my $widget  = $self->widget;
     my $handler = sub { handle_event($observer, @_) };
     my $signal  = $widget->signal_connect($self->event, $handler );
-    my $cleanup = sub {
- print "calling cleanup on disposable closure of signal disconnect\n";      
-     disconnect_handler($widget, $signal);
-    };
+    my $cleanup = sub { disconnect_handler($widget, $signal) };
     return DisposableClosure->new(cleanup => $cleanup);
 }
 
@@ -31,8 +28,9 @@ sub disconnect_handler {
 
 sub handle_event {
     my ($observer, $widget, $event) = @_;
+#    use Data::Dumper;print Dumper [@_];
     # sometimes Gtk sends here non-button events
-    return FALSE unless $event->isa('Gtk3::Gdk::EventButton');
+    return FALSE if ref($event) eq 'Gtk3::Gdk::Event';
     my ($unknown, $ex, $ey, $state) = $event->window->get_pointer;
     $observer->on_next(Event->new($widget, $ex, $ey));
 }

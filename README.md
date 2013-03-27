@@ -57,12 +57,13 @@ Here is how we build the $sketch observable stream:
                                 ->map(sub{ 1 });
     $button_release = Observable->from_mouse_release($canvas)
                                 ->map(sub{ 0 });
-    $button_stream  = $button_press->merge($button_release)
-                                   ->unshift(0);
 
-    $motion_stream = $Observable->from_mouse_motion($canvas)
-                                ->map(sub{ [$_->x, $_->y] })
-                                ->unshift( [$window->get_pointer] ));
+    $button_stream = $button_press->merge($button_release)
+                                  ->unshift(0);
+
+    $motion_stream = Observable->from_mouse_motion($canvas)
+                               ->map(sub{ [$_->x, $_->y] })
+                               ->unshift( [$window->get_pointer] );
 
     $sketch = $button_stream->combine_latest($motion_stream)
                             ->buffer(2, 1)
@@ -74,7 +75,7 @@ and all you need to do is draw a line (or a point if the positions are
 identical):
 
     $sketch->subscribe(sub{
-        my ($x0, y0, $x1, $y1) = @{$_[0]};
+        my ($x0, $y0, $x1, $y1) = @{$_[0]};
         draw_line_between_two_points($x0, $y0, $x1, $y1);
     })
 

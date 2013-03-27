@@ -16,7 +16,7 @@ sub from_mouse_release {
 
 sub from_mouse_motion {
     my ($self, $widget) = @_;
-    return Mouse->new(widget => $widget, event => 'motion_notify');
+    return Mouse->new(widget => $widget, event => 'motion_notify_event');
 }
 
 sub from_mouse_press {
