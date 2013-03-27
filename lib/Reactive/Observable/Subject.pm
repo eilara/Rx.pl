@@ -38,7 +38,14 @@ sub on_error {
     $self->unwrap;
 }
 
-sub unwrap { delete shift->{observers} }
+sub unwrap {
+   my $self = shift;
+   # work around Set::Object issue- if you don't clear the set
+   # you will get an attempt to free unreferenced scalar on
+   # global destruction
+   $self->{observers}->clear;
+   delete $self->{observers};
+}
 
 1;
 
