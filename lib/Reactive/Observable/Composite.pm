@@ -14,7 +14,12 @@ sub run {
 
     my @disposables = map { $_->subscribe_observer($observer_wrapper) }
         $self->initial_subscriptions;
-    $disposable_wrapper->wrap([@disposables]);
+
+    # we want to save the inner disposables but not in case they
+    # have, on subscription, decided to set the inner disposable
+    # themselves, e.g. as Push would do if o1 was Observable->once
+    $disposable_wrapper->wrap([@disposables])
+        unless $disposable_wrapper->wrap;
     return $disposable_wrapper;
 }
 

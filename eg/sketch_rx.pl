@@ -31,13 +31,15 @@ $window    ->signal_connect(delete_event => sub { Reactive->unloop });
 $area      ->signal_connect(draw         => \&draw );
 
 my $button_press   = Observable->from_mouse_press($event_box)
-                               ->map(sub{ 1 });
+                               ->unshift(Observable->once(0));
+#                               ->map(sub{ 1 });
 #my $button_release = Observable->from_mouse_release($event_box)
 #                               ->map(sub{ 0 });
-#my $button_stream  = $button_press->merge($button_release)
+#my $button_stream  = $button_press->merge($button_release);
 #                                  ->unshift(0);
 my $s=$button_press->subscribe(sub{
     use Data::Dumper;print Dumper [@_];});
+use Data::Dumper;print Dumper $s;
 
 #my $motion_stream  = $Observable->from_mouse_motion($event_box)
 #                                ->map(sub{ [$_->x, $_->y] })

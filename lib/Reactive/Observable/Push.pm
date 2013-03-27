@@ -40,7 +40,6 @@ sub on_complete {
 
 sub on_complete_1 {
     my $self = shift;
-    $self->disposable_wrapper->unwrap;
     my $next_observable = $self->next_observable;
     $self->next_observable(undef);
     my $disposable = $next_observable->subscribe_observer($self);

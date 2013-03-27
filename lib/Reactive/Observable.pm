@@ -156,16 +156,6 @@ sub take {
     return Take->new(wrap => $self, max => $max);
 }
 
-sub unshift {
-    my ($self, $thing, @rest) = @_;
-    my $ref = ref $thing;
-    my $observable = ($ref && $thing->isa(__PACKAGE__))?
-        $thing:
-        ref($self)->from_list($thing, @rest);
-    # unshift is reverse of push
-    return Push->new(o1 => $observable, o2 => $self);
-}
-
 sub distinct_changes {
     my ($self) = @_;
     return DistinctChanges->new(wrap => $self);
@@ -188,6 +178,20 @@ sub push {
     my ($self, $observable) = @_;
     return Push->new(o1 => $self, o2 => $observable);
 }
+
+
+sub unshift {
+    my ($self, $observable) = @_;
+    return Push->new(o2 => $self, o1 => $observable);
+}
+#    my ($self, $thing, @rest) = @_;
+#    my $ref = ref $thing;
+#    my $observable = ($ref && $thing->isa(__PACKAGE__))?
+#        $thing:
+#        ref($self)->from_list($thing, @rest);
+#    # unshift is reverse of push
+#    return Push->new(o1 => $observable, o2 => $self);
+#}
 
 sub merge {
     my ($self, $observable) = @_;

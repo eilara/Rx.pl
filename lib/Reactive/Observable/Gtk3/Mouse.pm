@@ -15,7 +15,10 @@ sub run {
     my $widget  = $self->widget;
     my $handler = sub { handle_event($observer, @_) };
     my $signal  = $widget->signal_connect($self->event, $handler );
-    my $cleanup = sub { disconnect_handler($widget, $signal) };
+    my $cleanup = sub {
+ print "calling cleanup on disposable closure of signal disconnect\n";      
+     disconnect_handler($widget, $signal);
+    };
     return DisposableClosure->new(cleanup => $cleanup);
 }
 
