@@ -17,6 +17,11 @@ use aliased 'Reactive::Observable::Merge';
 use aliased 'Reactive::Observable::CombineLatest';
 use aliased 'Reactive::Observable::Subject';
 
+# when you subscribe forever, by calling subscribe()
+# in void context, we save the subscription forever
+# right here
+my @Global_Subscriptions = ();
+
 has scheduler => (is => 'ro', lazy_build => 1, handles =>
                  [qw(schedule_recursive now)]);
 
@@ -25,11 +30,14 @@ sub _build_scheduler { Reactive::Scheduler::Coro->new }
 # subscribe with a set of handlers
 sub subscribe {
     my ($self, @handlers) = @_;
+    my $is_void_context = !defined(wantarray);
     # sugar- if one sub only, then it is on_next handler
     my %handlers = (@handlers == 1)? (on_next => $handlers[0]): @handlers;
     $handlers{$_} ||= sub {} foreach qw(on_next on_error on_complete);
     my $observer = Observer->new(handlers => {%handlers});
-    return $self->subscribe_observer($observer);
+    my $disposable = $self->subscribe_observer($observer);
+    push(@Global_Subscriptions, $disposable) if $is_void_context;
+    return $disposable;
 }
 
 # subscribe with an observer

@@ -50,7 +50,7 @@ my $sketch = $button_stream->combine_latest($motion_stream)
                            ->map(sub{ [map { @{$_->[1]} } @$_]});
 
 
-my $s = $sketch->subscribe(sub{
+$sketch->subscribe(sub{
     my ($x0, $y0, $x1, $y1) = @{$_[0]};
     draw_line($x0, $y0, $x1, $y1);
 });
