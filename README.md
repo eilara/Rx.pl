@@ -186,8 +186,7 @@ TODO
 * skip/take while/until/last, first/last
   select many, timestamp, let, max/min/sum/average, fold/scan,
   repeat (resubscribes to self), retry, timeout, blocking foreach,
-  any, all, group by, do, delay
-
+  any, all, group by, do, delay, fork join
 
 * "K 1" instead of "sub{ 1 }"
 
@@ -201,7 +200,10 @@ TODO
 * demos- autocomplete with some terminal toolkit and menus, drag&drop,
   inactivity timer, perl news feed, perl activity graph, time flies,
   online spellchecker, image download robot, proxy, konami code, sketch 
-  with bleeding ink and smoothing, erase, color change, etc.
+  with bleeding ink and smoothing, erase, color change, etc. stock
+  ticker with running averages, max, stddev and other window funcs,
+  promise examples
+
 
 LINKS
 -----
@@ -217,8 +219,3 @@ https://github.com/Reactive-Extensions/RxJS-Examples
 https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
 
 
-PACKAGES
---------
-
-    Disposable
-        Wrapper
