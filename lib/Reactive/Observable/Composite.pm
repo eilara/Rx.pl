@@ -7,26 +7,33 @@ extends 'Reactive::Observable';
 
 sub run {
     my ($self, $observer)  = @_;
-    my $disposable_wrapper = DisposableWrapper->new;
+    my $disposable_wrapper = $self->build_disposable_parent;
     my $observer_pkg       = ref($self). '::Observer';
     my $observer_wrapper   = $observer_pkg->new
         ($self->observer_args($observer, $disposable_wrapper));
 
     my @disposables = map { $_->subscribe_observer($observer_wrapper) }
         $self->initial_subscriptions;
+    $self->fill_disposable_parent($disposable_wrapper, @disposables);
 
+    return $disposable_wrapper;
+}
+
+sub build_disposable_parent { DisposableWrapper->new }
+
+sub fill_disposable_parent {
+    my ($self, $disposable_parent, @disposables) = @_;
     # we want to save the inner disposables but not in case they
     # have, on subscription, decided to set the inner disposable
     # themselves, e.g. as Push would do if o1 was Observable->once
-    $disposable_wrapper->wrap([@disposables])
-        unless $disposable_wrapper->wrap;
-    return $disposable_wrapper;
+    $disposable_parent->wrap([@disposables])
+        unless $disposable_parent->wrap;
 }
 
 sub initial_subscriptions { () }
 
 sub observer_args {
-    my ($self, $observer, $disposable_wrapper) = @_;
+    my ($self, $observer, $disposable_parent) = @_;
     return (wrap => $observer, inner(@_));
 }
 

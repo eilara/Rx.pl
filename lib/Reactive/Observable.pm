@@ -215,8 +215,12 @@ sub combine_latest {
 # time related -----------------------------------------------------------------
 
 sub delay {
-    my ($self, $delay) = @_;
-    return Delay->new(wrap => $self, delay => $delay);
+    my ($self, $delay, $scheduler) = @_;
+    return Delay->new(
+        wrap  => $self,
+        delay => $delay,
+        maybe_scheduler $scheduler
+    );
 }
 
 1;

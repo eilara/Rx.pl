@@ -39,6 +39,7 @@ sub advance_by {
         last if $t > $max;
         $self->{now} = $t;
         $self->remove_action($action);
+#print "--> Running action at t=$t\n";
         $action->();
     }
     $self->{now} = $max;
