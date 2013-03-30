@@ -19,5 +19,21 @@ subtest 'map to list is flattened' => sub {
 };
 restart;
 
+subtest 'map error unsubscribes' => sub {
+    my $i;
+    my $s = subscribe Observable->interval(100, $scheduler)
+                                ->map(sub{
+                                    $i++;
+                                    die 'zzz' if $i == 2;
+                                    $i;
+                                  });
+    advance_and_check_event_counts
+        [   1 => 0      ],
+        [ 100 => 1, 0, 0],
+        [ 100 => 1, 0, 1],
+        [ 100 => 1, 0, 1];
+};
+restart;
+
 done_testing;
 

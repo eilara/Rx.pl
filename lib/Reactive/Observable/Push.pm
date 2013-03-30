@@ -9,26 +9,15 @@ extends 'Reactive::Observable::Composite';
 sub initial_subscriptions { (shift->o1) }
 
 augment observer_args => sub {
-    my ($self, $observer, $disposable_wrapper) = @_;
-    return (
-       next_observable    => $self->o2,
-       disposable_wrapper => $disposable_wrapper,
-       inner(@_),
-   );
+    my $self = shift;
+    return (next_observable => $self->o2, inner(@_));
 };
 
 package Reactive::Observable::Push::Observer;
 
 use Moose;
 
-# disposable_wrapper - disposable wrapping subscription to wrapped
-#                      observable of wrapped observer
-#                      also the subscription of this observer
-#                      and thus must be weak, for outside control
-#                      of the subscription
-
-has disposable_wrapper => (is => 'ro', required => 1, weak_ref => 1);
-has next_observable    => (is => 'rw', required => 1);
+has next_observable => (is => 'rw', required => 1);
 
 extends 'Reactive::Observer::Wrapper';
 
@@ -44,7 +33,7 @@ sub on_complete_1 {
     $self->next_observable(undef);
     my $disposable = $next_observable->subscribe_observer($self);
     # new subscription could have completed
-    $self->disposable_wrapper->wrap($disposable)
+    $self->wrap_with_parent($disposable)
         if $self->wrap; # we have not been unwrapped yet
 }
 

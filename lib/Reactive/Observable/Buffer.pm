@@ -29,7 +29,8 @@ sub on_next {
     return unless @$buffer == $self->size;
 
     my @buffer = @$buffer;
-    my @value  = @buffer; # copy list
+    my @value  = @buffer; # copy list cause must complete all internal
+                          # computes so on_next is a tail call
     @buffer = @buffer[-$self->skip..-1];
     $self->buffer(\@buffer);        
     $self->wrap->on_next(\@value);

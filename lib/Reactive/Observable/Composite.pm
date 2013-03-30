@@ -7,16 +7,16 @@ extends 'Reactive::Observable';
 
 sub run {
     my ($self, $observer)  = @_;
-    my $disposable_wrapper = $self->build_disposable_parent;
-    my $observer_pkg       = ref($self). '::Observer';
-    my $observer_wrapper   = $observer_pkg->new
-        ($self->observer_args($observer, $disposable_wrapper));
+    my $disposable_parent = $self->build_disposable_parent;
+    my $observer_pkg      = ref($self). '::Observer';
+    my $observer_wrapper  = $observer_pkg->new
+        ($self->observer_args($observer, $disposable_parent));
 
     my @disposables = map { $_->subscribe_observer($observer_wrapper) }
         $self->initial_subscriptions;
-    $self->fill_disposable_parent($disposable_wrapper, @disposables);
+    $self->fill_disposable_parent($disposable_parent, @disposables);
 
-    return $disposable_wrapper;
+    return $disposable_parent;
 }
 
 sub build_disposable_parent { DisposableWrapper->new }
@@ -34,7 +34,11 @@ sub initial_subscriptions { () }
 
 sub observer_args {
     my ($self, $observer, $disposable_parent) = @_;
-    return (wrap => $observer, inner(@_));
+    return (
+       wrap              => $observer,
+       disposable_parent => $disposable_parent,
+       inner(@_),
+   );
 }
 
 1;

@@ -192,7 +192,9 @@ TODO
 
 * Void and "KVoid" instead of 1 and "sub { 1 }"
 
-* more perlish- shift/unshift push/pop instead of concat/start\_with/etc.
+* merge with no args should be merge of observale of observables
+
+* test from\_stdin with unsubscribe, maybe cleanup should reset handle
 
 * observable from SDL mouse/keyboard events, HTTP requests,
   sockets, filesystem events

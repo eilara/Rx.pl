@@ -15,11 +15,10 @@ sub fill_disposable_parent {
 }
 
 augment observer_args => sub {
-    my ($self, $observer, $disposable_parent) = @_;
+    my $self = shift;
     return (
-        delay             => $self->delay,
-        disposable_parent => $disposable_parent,
-        scheduler         => $self->scheduler,
+        delay     => $self->delay,
+        scheduler => $self->scheduler,
         inner(@_),
     );
 };
@@ -30,19 +29,16 @@ use Moose;
 use Scalar::Util qw(weaken);
 use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
-has delay             => (is => 'ro', required => 1); # msec
-has disposable_parent => (is => 'ro', required => 1, weak_ref => 1);
-has scheduler         => (is => 'ro', required => 1, weak_ref => 1,
-                          handles => [qw(schedule_once)]);
+has delay     => (is => 'ro', required => 1); # msec
+has scheduler => (is => 'ro', required => 1, weak_ref => 1,
+                  handles => [qw(schedule_once)]);
 
 extends 'Reactive::Observer::Wrapper';
 
 sub on_next {
     my ($self, $value) = @_;
 
-    # scheduler must not keep strong ref to disposable parent
-    weaken(my $disposable_parent = $self->disposable_parent);
-    # but can keep strong ref to wrapped observer, as we do
+    # can keep strong ref to wrapped observer, as this object does
     my $wrap = $self->wrap;
     # and a weak ref to the timer handle, which is held 
     # in the disposable parent with a strong ref
@@ -50,19 +46,13 @@ sub on_next {
     weaken (my $weak_disposable = $disposable);
 
     my $handle = $self->schedule_once($self->delay, sub {
-        return unless $disposable_parent;
-        $disposable_parent->unwrap($weak_disposable);
+        return unless $self->disposable_parent;
+        $self->unwrap_parent($weak_disposable);
         $wrap->on_next($value);
     });
     $disposable->wrap($handle);
-    $disposable_parent->wrap($disposable);
+    $self->wrap_with_parent($disposable);
 }
-
-before unwrap => sub {
-    my $self = shift;
-    $self->disposable_parent->unwrap
-        if $self->disposable_parent;
-};
 
 1;
 

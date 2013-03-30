@@ -28,10 +28,10 @@ subtest 'unshifting timers' => sub {
                    Observable->timer(5000, $scheduler)
         ->unshift( Observable->timer(2000, $scheduler) );
     advance_and_check_event_counts
-        [1001 => 0   ],
-        [1000 => 1   ],
-        [1000 => 1   ],
-        [2000 => 1   ];
+        [1001 => 0],
+        [1000 => 1],
+        [1000 => 1],
+        [2000 => 1];
     undef $s;
     advance_and_check_event_count 10000 => 1;
 };
@@ -42,7 +42,7 @@ subtest 'unshifting empty subscription and timer' => sub {
                   ->unshift( Observable->timer(2000, $scheduler) );
     advance_and_check_event_counts
     [1001 => 0   ],
-    [1000 => 2,1 ],
+    [1000 => 2, 1],
 };
 restart;
 

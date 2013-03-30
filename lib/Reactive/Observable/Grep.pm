@@ -22,7 +22,11 @@ extends 'Reactive::Observer::Wrapper';
 sub on_next {
     my ($self, $value) = @_;
     local $_ = $value;
-    $self->wrap->on_next($value) if $self->predicate->($_);
+    my $should_pass;
+    eval { $should_pass = $self->predicate->($_) };
+    my $err = $@;
+    return $self->on_error($err) if $err;
+    $self->wrap->on_next($value) if $should_pass;
 }
 
 1;
