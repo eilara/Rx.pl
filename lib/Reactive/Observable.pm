@@ -15,6 +15,7 @@ use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
 use aliased 'Reactive::Observable::Merge';
+use aliased 'Reactive::Observable::MergeNotifications';
 use aliased 'Reactive::Observable::CombineLatest';
 use aliased 'Reactive::Observable::Subject';
 use aliased 'Reactive::Observable::Delay';
@@ -204,7 +205,10 @@ sub unshift {
 
 sub merge {
     my ($self, $observable) = @_;
-    return Merge->new(o1 => $self, o2 => $observable);
+    # merge with no args is merge of observable of observables
+    return $observable?
+        Merge->new(o1 => $self, o2 => $observable):
+        MergeNotifications->new(wrap => $self);
 }
 
 sub combine_latest {

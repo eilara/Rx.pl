@@ -47,5 +47,14 @@ subtest 'error on child causes error on parent' => sub {
 };
 restart;
 
+subtest 'merge with no args is merge of observable of observables' => sub {
+    my $s = subscribe Observable->from_list(1, 2, 3)
+                                ->map(sub{ Observable->once(2 * $_) })
+                                ->merge;
+    advance_and_check_event_count 0 => 3, 1;
+    is_deeply \@next, [2, 4, 6], 'observables flattened';
+};
+restart;
+
 done_testing;
 

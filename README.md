@@ -41,8 +41,8 @@ Finally subscribe to the $mouse\_any stream, to a stop screensaver:
 To create a mouse sketching program, we want to transform low-level mouse
 events in to a single application level event called _sketch_. The sketch
 handler requires a pair of points. It will draw a line between them. We
-need to make sure it gets called on the correct events, and with the correct
-args:
+need to make sure the handler gets called on the correct events, and with the
+correct args:
 
 - when mouse is moved, and button is pressed, we want an event, with
   the pair of points being the start and end positions of the mouse,
@@ -191,8 +191,6 @@ TODO
 * "K 1" instead of "sub{ 1 }"
 
 * Void and "KVoid" instead of 1 and "sub { 1 }"
-
-* merge with no args should be merge of observale of observables
 
 * test from\_stdin with unsubscribe, maybe cleanup should reset handle
 
