@@ -19,6 +19,7 @@ use aliased 'Reactive::Observable::MergeNotifications';
 use aliased 'Reactive::Observable::CombineLatest';
 use aliased 'Reactive::Observable::Subject';
 use aliased 'Reactive::Observable::Delay';
+use aliased 'Reactive::Observable::Do';
 
 sub empty_disposable() { Reactive::Disposable::Empty->new }
 
@@ -225,6 +226,13 @@ sub delay {
         delay => $delay,
         maybe_scheduler $scheduler
     );
+}
+
+# side-effects -----------------------------------------------------------------
+
+sub do {
+    my ($self, $action) = @_;
+    return Do->new(wrap => $self, action => $action);
 }
 
 1;

@@ -15,7 +15,7 @@ sub fill_disposable_parent {
 }
 
 augment observer_args => sub {
-    my $self = shift;
+    my ($self) = @_;
     return (
         delay     => $self->delay,
         scheduler => $self->scheduler,

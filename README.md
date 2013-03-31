@@ -217,5 +217,6 @@ https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/
 http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10\_FlowControlExamples.cs
 https://github.com/Reactive-Extensions/RxJS-Examples
 https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
+http://blogs.msdn.com/b/rxteam/archive/2010/10/28/rx-design-guidelines.aspx
 
 

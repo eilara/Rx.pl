@@ -7,7 +7,7 @@ extends 'Reactive::Observable::Wrapper';
 has projection => (is => 'ro', required => 1);
 
 augment observer_args => sub {
-    my ($self, $observer, $disposable_parent) = @_;
+    my ($self) = @_;
     return (projection => $self->projection, inner(@_));
 };
 

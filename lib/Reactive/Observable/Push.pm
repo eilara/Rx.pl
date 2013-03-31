@@ -9,7 +9,7 @@ extends 'Reactive::Observable::Composite';
 sub initial_subscriptions { (shift->o1) }
 
 augment observer_args => sub {
-    my $self = shift;
+    my ($self) = @_;
     return (next_observable => $self->o2, inner(@_));
 };
 

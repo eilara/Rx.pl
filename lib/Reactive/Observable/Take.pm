@@ -7,7 +7,7 @@ has max => (is => 'ro', required => 1);
 extends 'Reactive::Observable::Wrapper';
 
 augment observer_args => sub {
-    my $self = shift;
+    my ($self) = @_;
     return (max => $self->max, inner(@_));
 };
 
