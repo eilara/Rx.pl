@@ -28,6 +28,15 @@ my $s3 = Observable->from_stdin->subscribe(
     on_complete => sub { say "complete 3" },
 );
 
-say "Running event loop, hit ctrl-d to exit...";
+say "Running event loop, hit ctrl-d to restart...";
 Reactive::loop;
+say "Running foreach, hit ctrl-d to exit...";
 
+# foreach is blocking version of subscribe
+Observable->from_stdin->foreach(
+    on_next     => sub { say "on_next  4=$_" },
+    on_error    => sub { say "on_error 4=$_" },
+    on_complete => sub { say "complete 4" },
+);
+
+say 'Done.';
