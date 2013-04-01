@@ -184,9 +184,15 @@ TODO
 ----
 
 * skip/take while/until/last, first/last
-  select many, timestamp, let, max/min/sum/average, fold/scan,
-  repeat (resubscribes to self), retry, timeout, blocking foreach,
-  any, all, group by, do, delay, fork join
+  timestamp, let, max/min/sum/average, fold/scan,
+  repeat (resubscribes to self), retry, timeout, any, all, group by,
+  fork join, blocking to\_list
+
+* decide- does this use Coro, EV, Coro::EV, Coro::AnyEvent and/or
+  AnyEvent? EV works nicely with EV::Glib and Gtk3 at least on 
+  Linux, AnyEvent is more common for Http work, Coro is awesome
+  but is it required? Currently uses a mish-mash of string, glue, fog,
+  mirrors, and every single one of the above mentioned modules
 
 * "K 1" instead of "sub{ 1 }"
 

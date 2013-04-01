@@ -2,6 +2,7 @@ package Reactive::Observable;
 
 use Moose;
 use Reactive::Scheduler::Coro;
+use AnyEvent;
 use Reactive::Disposable::Empty;
 use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
@@ -11,6 +12,7 @@ use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
+use aliased 'Reactive::Observable::Skip';
 use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
@@ -37,10 +39,8 @@ sub _build_scheduler { Reactive::Scheduler::Coro->new }
 sub subscribe {
     my ($self, @handlers) = @_;
     my $is_void_context = !defined(wantarray);
-    # sugar- if one sub only, then it is on_next handler
-    my %handlers = (@handlers == 1)? (on_next => $handlers[0]): @handlers;
-    $handlers{$_} ||= sub {} foreach qw(on_next on_error on_complete);
-    my $observer = Observer->new(handlers => {%handlers});
+    my $handlers = $self->sugarize_handlers(@handlers);
+    my $observer = Observer->new(handlers => $handlers);
     my $disposable = $self->subscribe_observer($observer);
     push(@Global_Subscriptions, $disposable) if $is_void_context;
     return $disposable;
@@ -50,6 +50,15 @@ sub subscribe {
 sub subscribe_observer {
     my ($self, $observer) = @_;
     return $self->run($observer);
+}
+
+sub sugarize_handlers {    
+    my ($self, @handlers) = @_;
+    # sugar - if one sub only, then it is on_next handler
+    my %handlers = (@handlers == 1)? (on_next => $handlers[0]): @handlers;
+    # sugar - missing handlers are empty subs
+    $handlers{$_} ||= sub {} foreach qw(on_next on_error on_complete);
+    return {%handlers};
 }
 
 sub maybe_scheduler($) { $_[0]? (scheduler => $_[0]): () }
@@ -166,8 +175,13 @@ sub count {
 }
 
 sub take {
-    my ($self, $max) = @_;
-    return Take->new(wrap => $self, max => $max);
+    my ($self, $count) = @_;
+    return Take->new(wrap => $self, count => $count);
+}
+
+sub skip {
+    my ($self, $count) = @_;
+    return Skip->new(wrap => $self, count => $count);
 }
 
 sub distinct_changes {
@@ -234,6 +248,34 @@ sub do {
     my ($self, $action) = @_;
     return Do->new(wrap => $self, action => $action);
 }
+
+# blocking ---------------------------------------------------------------------
+
+sub foreach {
+    my ($self, @handlers) = @_;
+    my $cv = AnyEvent->condvar;
+    my $handlers = $self->sugarize_handlers(@handlers);
+    my $disposable = $self->subscribe(
+        on_next => sub {
+            my ($value) = @_;
+            local $_ = $value;
+            $handlers->{on_next}->($_);
+        },
+        on_complete => sub {
+            $handlers->{on_complete}->();
+            $cv->send;
+        },
+        on_error => sub {
+            my ($error) = @_;
+            local $_ = $error;
+            $handlers->{on_error}->($_);
+            $cv->send;
+        },
+    );
+    $cv->recv;
+    return undef;
+}
+
 
 1;
 
