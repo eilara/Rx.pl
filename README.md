@@ -15,18 +15,20 @@ Examples:
 
 ### Screensaver ###
 
-An observable that notifies after 10 seconds of mouse inactivity:
+An observable that notifies after 2 seconds of mouse inactivity:
 
     my $mouse_any = Observable->from_mouse_motion($window)
                               ->merge( Observable->from_mouse_press($window) )
                               ->merge( Observable->from_mouse_release($window) );
 
-    my $start = $mouse_any->map(sub { 1 })
+    my $start = $mouse_any->map(sub{ 1 })
                           ->unshift(1)
-                          ->timeout(10_000, sub { 1 });
+                          ->timeout(2_000, sub{ 0 })
+                          ->grep(sub{ !$_ });
 
 Note how the observable pipeline translates low-level mouse events to
-high-level application events, i.e. start\_screensaver.
+high-level application events. The _start_ event is composed by timing
+out on the low level mouse events.
 
 Then subscribe to this stream, to start the screensaver:
 
