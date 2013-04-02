@@ -18,6 +18,7 @@ use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
 use aliased 'Reactive::Observable::Merge';
 use aliased 'Reactive::Observable::MergeNotifications';
+use aliased 'Reactive::Observable::MultiMerge';
 use aliased 'Reactive::Observable::CombineLatest';
 use aliased 'Reactive::Observable::Subject';
 use aliased 'Reactive::Observable::Delay';
@@ -219,8 +220,12 @@ sub unshift {
 }
 
 sub merge {
-    my ($self, $observable) = @_;
+    my ($self, @observables) = @_;
+    # merge on class is multi merge of N observables in a list
+    return MultiMerge->new(observables => [@observables])
+        unless ref $self;
     # merge with no args is merge of observable of observables
+    my $observable = $observables[0];
     return $observable?
         Merge->new(o1 => $self, o2 => $observable):
         MergeNotifications->new(wrap => $self);

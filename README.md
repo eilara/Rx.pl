@@ -13,32 +13,6 @@ JSON
 Examples:
 ---------
 
-### Screensaver ###
-
-An observable that notifies after 2 seconds of mouse inactivity:
-
-    my $mouse_any = Observable->from_mouse_motion($window)
-                              ->merge( Observable->from_mouse_press($window) )
-                              ->merge( Observable->from_mouse_release($window) );
-
-    my $start = $mouse_any->map(sub{ 1 })
-                          ->unshift(1)
-                          ->timeout(2_000, sub{ 0 })
-                          ->grep(sub{ !$_ });
-
-Note how the observable pipeline translates low-level mouse events to
-high-level application events. The _start_ event is composed by timing
-out on the low level mouse events.
-
-Then subscribe to this stream, to start the screensaver:
-
-    $start->subscribe(sub{ say 'starting screensaver!' });
-
-Finally subscribe to the $mouse\_any stream, to a stop screensaver:
-
-    $mouse_any->subscribe(sub{ say 'stopping screensaver!' });
-
-
 ### Sketch ###
 
 To create a mouse sketching program, we want to transform low-level mouse
@@ -188,8 +162,11 @@ TODO
 
 * skip/take while/until/last, first/last
   timestamp, let, max/min/sum/average, fold/scan,
-  repeat (resubscribes to self), retry, timeout, any, all, group by,
+  repeat (resubscribes to self), retry, any, all, group by,
   fork join, blocking to\_list
+
+* timeout - from subscription to 1st on\_next and timeout
+  between on\_next
 
 * decide- does this use Coro, EV, Coro::EV, Coro::AnyEvent and/or
   AnyEvent? EV works nicely with EV::Glib and Gtk3 at least on 

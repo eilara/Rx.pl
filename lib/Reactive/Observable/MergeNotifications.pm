@@ -1,5 +1,8 @@
 package Reactive::Observable::MergeNotifications;
 
+# merge observables that are the notifications of an observable
+# completes when main and notification observables complete
+
 use Moose;
 use aliased 'Reactive::Disposable::Composite' => 'CompositeDisposable';
 
@@ -30,8 +33,7 @@ sub on_next {
     weaken (my $weak_disposable = $disposable);
 
     my $handle = $value->subscribe(
-        on_next     => sub {
-        $self->wrap->on_next(shift) },
+        on_next     => sub { $self->wrap->on_next(shift) },
         on_complete => sub { $self->on_child_complete($weak_disposable) },
         on_error    => sub { $self->on_error(shift) },
     );
