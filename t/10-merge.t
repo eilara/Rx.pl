@@ -69,5 +69,18 @@ subtest 'merge on class is merge of list of observables' => sub {
 };
 restart;
 
+subtest 'also works on array ref' => sub {
+    my $s = subscribe Observable->merge([
+        Observable->from_list(1, 2, 3),
+        Observable->timer(1000, $scheduler),
+        Observable->timer(2000, $scheduler),
+    ]);
+    advance_and_check_event_counts
+        [   0 => 3   ],
+        [1001 => 4   ],
+        [1000 => 5, 1];
+};
+restart;
+
 done_testing;
 

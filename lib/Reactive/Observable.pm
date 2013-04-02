@@ -223,6 +223,7 @@ sub merge {
     my ($self, @observables) = @_;
     # merge on class is multi merge of N observables in a list
     return MultiMerge->new(observables => (
+        # sugar - observables can be given as list or array ref
         ref($observables[0]) eq 'ARRAY'?
             $observables[0]: [@observables]
     )) unless ref $self;
