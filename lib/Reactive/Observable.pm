@@ -222,8 +222,10 @@ sub unshift {
 sub merge {
     my ($self, @observables) = @_;
     # merge on class is multi merge of N observables in a list
-    return MultiMerge->new(observables => [@observables])
-        unless ref $self;
+    return MultiMerge->new(observables => (
+        ref($observables[0]) eq 'ARRAY'?
+            $observables[0]: [@observables]
+    )) unless ref $self;
     # merge with no args is merge of observable of observables
     my $observable = $observables[0];
     return $observable?

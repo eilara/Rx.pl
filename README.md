@@ -8,7 +8,7 @@ Dependencies
 ------------
 
 Moose, aliased, Coro, EV, AnyEvent, Set::Object, Cairo, Gtk3, EV::Glib, Glib,
-JSON    
+JSON, autobox::Core
 
 Examples:
 ---------
