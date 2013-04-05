@@ -31,7 +31,7 @@ Observable->merge(
 )->map(sub{ decode_query $_ })->foreach(
 
     on_next  => sub { say },
-    on_error => sub { say $_->{ErrorMessage} },
+    on_error => sub { say },
 
 );
 

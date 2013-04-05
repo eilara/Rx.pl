@@ -185,8 +185,9 @@ TODO
 * too many similar observables inherit from Composite- tease another
   class out of there
 
-* observable from SDL mouse/keyboard events, HTTP requests,
-  sockets, filesystem events
+* http client needs http\_get\_json
+
+* observable from SDL mouse/keyboard events, sockets, filesystem events
 
 * demos- autocomplete with some terminal toolkit and menus, drag&drop,
   inactivity timer, perl news feed, perl activity graph, time flies,

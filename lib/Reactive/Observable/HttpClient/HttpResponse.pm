@@ -22,10 +22,10 @@ sub run {
             $observer->on_next(Event->new($body, $headers));
             $observer->on_complete;
         } else {
-            $headers->{ErrorMessage} = "Error at '$headers->{URL}' ".
-                                       "[$headers->{Status}]: ".
-                                       "$headers->{Reason}";
-            $observer->on_error($headers);
+            my $error = "Error at '$headers->{URL}' ".
+                        "[$headers->{Status}]: ".
+                        "$headers->{Reason}";
+            $observer->on_error($error);
         }
     };
     $disposable->wrap($handle);

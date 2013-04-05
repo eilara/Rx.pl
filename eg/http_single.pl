@@ -8,7 +8,8 @@ use lib "$Bin/../lib";
 use URI::Escape;
 use JSON;
 use Reactive;
-use Reactive::Observable::HttpClient; # for HttpClient observables
+# for HttpClient observables
+use Reactive::Observable::HttpClient;
 
 my $Query     = uri_escape 'Perl 6';
 my $Wikipedia = 'http://en.wikipedia.org/w/api.php';
@@ -21,7 +22,7 @@ say "Getting $Perl6...";
 
 Observable->from_http_get($Perl6)->foreach(
     on_next  => sub { say $json->encode(decode_query($_)) },
-    on_error => sub { say $_->{ErrorMessage} },
+    on_error => sub { say },
 );
 
 say 'Done.';
