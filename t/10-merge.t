@@ -47,6 +47,27 @@ subtest 'error on child causes error on parent' => sub {
 };
 restart;
 
+subtest 'merge observables that complete on subscription' => sub {
+    my $s = subscribe 
+              Observable->once(1)
+     ->merge( Observable->once(2) );
+
+    is_deeply \@next    , [1, 2], 'order is preserved';
+    is_deeply \@complete, [1   ], '1 complete';
+};
+restart;
+
+subtest 'merge with observable that completes on subscription' => sub {
+    my $s = subscribe 
+              Observable->once(1)
+     ->merge( Observable->timer(100 ,$scheduler) );
+
+    advance_and_check_event_counts
+        [   0 => 1   ],
+        [ 101 => 2, 1];
+};
+restart;
+
 subtest 'merge with no args is merge of observable of observables' => sub {
     my $s = subscribe Observable->from_list(1, 2, 3)
                                 ->map(sub{ Observable->once(2 * $_) })

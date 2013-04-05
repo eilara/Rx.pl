@@ -32,13 +32,10 @@ $area      ->signal_connect(draw         => \&draw );
 
 $window->show_all;
 
-my $button_press   = Observable->from_mouse_press($event_box)
-                               ->map(sub{ 1 });
-my $button_release = Observable->from_mouse_release($event_box)
-                               ->map(sub{ 0 });
+my $button_press   = Observable->from_mouse_press  ($event_box)->map(1);
+my $button_release = Observable->from_mouse_release($event_box)->map(0);
 
-my $button_stream  = $button_press->merge($button_release)
-                                  ->unshift(0);
+my $button_stream  = $button_press->merge($button_release)->unshift(0);
 
 my $motion_stream  = Observable->from_mouse_motion($event_box)
                                ->map(sub{ [$_->x, $_->y] })

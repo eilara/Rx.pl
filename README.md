@@ -163,7 +163,7 @@ TODO
 * skip/take while/until/last, first/last
   timestamp, let, max/min/sum/average, fold/scan,
   repeat (resubscribes to self), retry, any, all, group by,
-  fork join, blocking to\_list
+  fork join, blocking to\_list, let
 
 * timeout - from subscription to 1st on\_next and timeout
   between on\_next
@@ -180,6 +180,11 @@ TODO
 
 * test from\_stdin with unsubscribe, maybe cleanup should reset handle
 
+* try deep recursion
+
+* too many similar observables inherit from Composite- tease another
+  class out of there
+
 * observable from SDL mouse/keyboard events, HTTP requests,
   sockets, filesystem events
 
@@ -189,7 +194,6 @@ TODO
   with bleeding ink and smoothing, erase, color change, etc. stock
   ticker with running averages, max, stddev and other window funcs,
   promise examples
-
 
 LINKS
 -----

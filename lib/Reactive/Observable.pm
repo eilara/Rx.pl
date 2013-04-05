@@ -9,6 +9,7 @@ use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::Map';
+use aliased 'Reactive::Observable::Expand';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
@@ -32,7 +33,7 @@ sub empty_disposable() { Reactive::Disposable::Empty->new }
 my @Global_Subscriptions = ();
 
 has scheduler => (is => 'ro', lazy_build => 1, handles =>
-                 [qw(schedule_recursive schedule_once now)]);
+                 [qw(schedule_periodic schedule_once now)]);
 
 sub _build_scheduler { Reactive::Scheduler::Coro->new }
 
@@ -161,8 +162,15 @@ sub from_stdin { return FromStdIn->new }
 # projections ------------------------------------------------------------------
 
 sub map {
-    my ($self, $projection) = @_;
+    my ($self, $thing) = @_;
+    # sugar: map to value is sub which returns value
+    my $projection = ref $thing eq 'CODE'? $thing: sub { $thing };
     return Map->new(wrap => $self, projection => $projection);
+}
+
+sub expand {
+    my ($self, $projection) = @_;
+    return Expand->new(wrap => $self, projection => $projection);
 }
 
 sub grep {

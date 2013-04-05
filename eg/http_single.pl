@@ -17,7 +17,7 @@ my $Perl6     = "$Wikipedia?action=query&list=search&format=json".
 
 my $json = JSON->new->pretty;
 
-say "Getting $Perl6...\n";
+say "Getting $Perl6...";
 
 Observable->from_http_get($Perl6)->foreach(
     on_next  => sub { say $json->encode(decode_query($_)) },

@@ -7,7 +7,7 @@ use Reactive::Test::ObservableFixture;
 my $fire_at = sub {
     my ($t, $v) = @_;
     Observable->timer($t, $scheduler)
-              ->map(sub{ $v });
+              ->map($v);
 };
 
 #              o1: 1--------2----3------->

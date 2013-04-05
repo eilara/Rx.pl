@@ -11,6 +11,12 @@ subtest 'simple map' => sub {
 };
 restart;
 
+subtest 'sugar for map to constant dispenses with "sub"' => sub {
+    my $s = subscribe Observable->once(1)->map(2);
+    is $next[0], 2;
+};
+restart;
+
 subtest 'map to list is flattened' => sub {
     my $s = subscribe Observable->from_list(1, 2, 3)
                                 ->map(sub{ ($_) x $_ });

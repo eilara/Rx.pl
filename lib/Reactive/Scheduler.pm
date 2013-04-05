@@ -7,14 +7,14 @@ use Reactive::Disposable::Wrapper;
 requires qw(schedule_once now);
 
 # at is in msec
-sub schedule_recursive {
+sub schedule_periodic {
     my ($self, $at, $action) = @_;
     my $disposable = Reactive::Disposable::Wrapper->new;
-    $self->_schedule_recursive($at, $action, $disposable);
+    $self->_schedule_periodic($at, $action, $disposable);
     return $disposable;
 }
 
-sub _schedule_recursive {
+sub _schedule_periodic {
     my ($self, $at, $action, $disposable) = @_;
     return unless $disposable; # we have been disposed, fire no more
 
@@ -25,7 +25,7 @@ sub _schedule_recursive {
         my $new_at = $action->();
         return unless $disposable; # we have been disposed, fire no more
         if (defined $new_at) {
-            $self->_schedule_recursive($new_at, $action, $disposable);
+            $self->_schedule_periodic($new_at, $action, $disposable);
         } else {
             $disposable->unwrap;
         }

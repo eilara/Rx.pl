@@ -1,11 +1,9 @@
-package Reactive::Observable::MergeNotifications;
-
-# merge observables that are the notifications of an observable
-
-# completes when main and notification observables complete
+package Reactive::Observable::Expand;
 
 use Moose;
 use aliased 'Reactive::Disposable::Composite' => 'CompositeDisposable';
+
+has projection => (is => 'ro', required => 1);
 
 extends 'Reactive::Observable::Wrapper';
 
@@ -16,13 +14,19 @@ sub fill_disposable_parent {
     $disposable_parent->wrap(@disposables);
 }
 
-package Reactive::Observable::MergeNotifications::Observer;
+augment observer_args => sub {
+    my ($self) = @_;
+    return (projection => $self->projection, inner(@_));
+};
+
+package Reactive::Observable::Expand::Observer;
 
 use Moose;
 use Scalar::Util qw(weaken);
 use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
-has num_started => (is => 'rw', default => 1);
+has projection  => (is => 'ro', required => 1);
+has num_started => (is => 'rw', default  => 1);
 
 extends 'Reactive::Observer::Wrapper';
 
@@ -30,11 +34,22 @@ sub on_next {
     my ($self, $value) = @_;
     $self->{num_started}++;
 
+    local $_ = $value;
+    $self->wrap->on_next($value);
+
+    my $next_observable;
+    eval {
+        $_ = $value;
+        $next_observable = $self->projection->($_);
+    };
+    my $err = $@;
+    return $self->on_error($err) if $err;
+
     my $disposable = DisposableWrapper->new;
     weaken (my $weak_disposable = $disposable);
 
-    my $handle = $value->subscribe(
-        on_next     => sub { $self->wrap->on_next(shift) },
+    my $handle = $next_observable->subscribe(
+        on_next     => sub { $self->on_next(shift) },
         on_complete => sub { $self->on_child_complete($weak_disposable) },
         on_error    => sub { $self->on_error(shift) },
     );

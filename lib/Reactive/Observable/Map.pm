@@ -23,7 +23,10 @@ sub on_next {
     my ($self, $value) = @_;
     local $_ = $value;
     my @new_values;
-    eval { @new_values = $self->projection->($_) };
+    eval {
+        $_ = $value;
+        @new_values = $self->projection->($_);
+    };
     my $err = $@;
     return $self->on_error($err) if $err;
     my $wrap = $self->wrap;
