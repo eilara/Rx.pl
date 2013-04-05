@@ -20,8 +20,8 @@ use Reactive::Observable::HttpClient; # for HttpClient observables
 # to get all links we need to chain HTTP requests until
 # there are no more links left to get
 
-my $Page      = 1146638; # id of Perl 6 page
-my $Batch     = 5;       # get $Batch links in each batch
+my $Page      = 1146638; # id of Perl 6 page, 312769 is Givataim wgArticleId
+my $Batch     = 20;      # get $Batch links in each batch
 my $Wikipedia = 'http://en.wikipedia.org/w/api.php';
 my $Links     = "$Wikipedia?action=query&prop=links&format=json".
                 "&pageids=$Page&pllimit=$Batch";
@@ -35,14 +35,17 @@ sub decode_links {
 
 sub get_links {
     my $token = shift;
-    my $continue = $token? "&continue=$token": '';
+    my $continue = $token? "&plcontinue=$token": '';
     my $get = Observable->from_http_get($Links. $continue);
     return $get->map(sub{ decode_json $_->body })
                ->map(sub{ {token => decode_token, links => decode_links} });
 }
 
-get_links->foreach(
-    on_next  => sub{ say $_->{token} },
+get_links->expand(sub{
+    $_->{token}? get_links($_->{token})
+               : Observable->empty
+})->foreach(
+    on_next  => sub{ say for @{$_->{links}} },
     on_error => sub{ say },
 );
 
