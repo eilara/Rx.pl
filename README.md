@@ -161,9 +161,9 @@ TODO
 ----
 
 * skip/take while/until/last, first/last
-  timestamp, let, max/min/sum/average, fold/scan,
+  timestamp, max/min/sum/average, fold/scan,
   repeat (resubscribes to self), retry, any, all, group by,
-  fork join, blocking to\_list, let
+  fork join, blocking to\_list
 
 * timeout - from subscription to 1st on\_next and timeout
   between on\_next

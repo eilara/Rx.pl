@@ -161,6 +161,11 @@ sub from_stdin { return FromStdIn->new }
 
 # projections ------------------------------------------------------------------
 
+sub let {
+    my ($self, $projection) = @_;
+    return $projection->($self);
+}
+
 sub map {
     my ($self, $thing) = @_;
     # sugar: map to value is sub which returns value
