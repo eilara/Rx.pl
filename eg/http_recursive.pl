@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
+use autobox::Core;
 use URI::Escape;
 use JSON;
 use Reactive;
@@ -20,7 +21,7 @@ use Reactive::Observable::HttpClient; # for HttpClient observables
 # to get all links we need to chain HTTP requests until
 # there are no more links left to get
 
-my $Page      = 1146638; # id of Perl 6 page, 312769 is Givataim wgArticleId
+my $Page      = 1146638; # id of Perl 6 page, wgArticleId=312769 for Givataim
 my $Batch     = 20;      # get $Batch links in each batch
 my $Wikipedia = 'http://en.wikipedia.org/w/api.php';
 my $Links     = "$Wikipedia?action=query&prop=links&format=json".
@@ -28,11 +29,10 @@ my $Links     = "$Wikipedia?action=query&prop=links&format=json".
 
 sub decode_token { $_->{'query-continue'}->{links}->{plcontinue} }
 
-sub decode_links {
-    return [ map { $_->{title} }
-                 @{$_->{query}->{pages}->{$Page}->{links}} ];
-}
+sub decode_links
+    { [$_->{query}->{pages}->{$Page}->{links}->map(sub{ $_->{title} })] }
 
+# takes token, returns stream firing hash of {next token, list of links}
 sub get_links {
     my $token = shift;
     my $continue = $token? "&plcontinue=$token": '';
@@ -49,6 +49,3 @@ get_links->expand(sub{
     on_error => sub{ say },
 );
 
-__END__
-format=json&action=query&titles=Perl%206&prop=links&pllimit=10
-&plcontinue=1146638|0|Backward_compatibility

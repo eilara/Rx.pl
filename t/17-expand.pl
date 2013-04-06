@@ -14,12 +14,23 @@ subtest '3 chained notifications' => sub {
                                           ->map($value)
                               : Observable->empty;
                     });
-
     advance_and_check_event_counts
         [   1 => 0   ],
         [ 100 => 1   ],
         [ 100 => 2   ],
         [ 100 => 3, 1];
+};
+restart;
+
+subtest 'correct disposal' => sub {
+    my $s = subscribe
+        Observable->interval(100, $scheduler)
+                  ->count
+                  ->expand(sub{ Observable->empty })
+                  ->take(3);
+
+    advance_and_check_event_count 301 => 3, 1;
+    is_deeply \@next, [1, 2, 3];
 };
 restart;
 

@@ -29,6 +29,8 @@ sub on_error {
     $self->unwrap;
 }
 
+sub is_active { shift->{disposable_parent} }
+
 sub wrap_with_parent {
     my ($self, $child) = @_;
     $self->disposable_parent->wrap($child);
@@ -42,7 +44,7 @@ sub unwrap_parent {
 sub unwrap {
     my $self = shift;
     delete $self->{wrap};
-    $self->unwrap_parent if $self->disposable_parent;
+    $self->unwrap_parent if $self->is_active;
 }
 
 1;

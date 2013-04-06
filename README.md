@@ -187,6 +187,8 @@ TODO
 
 * http client needs http\_get\_json
 
+* support take(0)
+
 * observable from SDL mouse/keyboard events, sockets, filesystem events
 
 * demos- autocomplete with some terminal toolkit and menus, drag&drop,

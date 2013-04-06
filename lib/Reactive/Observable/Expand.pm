@@ -46,7 +46,7 @@ sub on_next {
     return $self->on_error($err) if $err;
 
     my $disposable = DisposableWrapper->new;
-    weaken (my $weak_disposable = $disposable);
+    weaken(my $weak_disposable = $disposable);
 
     my $handle = $next_observable->subscribe(
         on_next     => sub { $self->on_next(shift) },
@@ -54,12 +54,16 @@ sub on_next {
         on_error    => sub { $self->on_error(shift) },
     );
 
+    return unless $self->is_active; # subscription could have caused us
+                                    # to deactivate
+
     $disposable->wrap($handle);
     $self->wrap_with_parent($disposable);
 }
 
 sub on_child_complete {
     my ($self, $child_disposable) = @_;
+    return unless $self->is_active;
     $self->unwrap_parent($child_disposable) if $child_disposable;
     $self->on_complete_final if --$self->{num_started} == 0;
 }

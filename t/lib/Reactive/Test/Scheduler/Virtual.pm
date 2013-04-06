@@ -34,11 +34,11 @@ sub sort_actions {
 sub advance_by {
     my ($self, $ms) = @_;
     my $max = $self->{now} + $ms;
-#print "--> Running actions to t=$max\n";
     while (my @sorted = $self->sort_actions) {
         my ($t, $action) = @{$sorted[0]};
         last if $t > $max;
         $self->{now} = $t;
+#print "--> Running actions at t=$t\n";
         $self->remove_action($action);
         $action->();
     }
