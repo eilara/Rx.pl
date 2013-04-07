@@ -30,6 +30,7 @@ sub get_5th_link {
     my $page = uri_escape shift;
     Observable->from_http_get("$Links$page")
               ->map(sub{ decode_json $_->body })
+#              ->do(sub{ say encode_json $_ })
               ->map(sub{ decode_5th_link });
 }
 
