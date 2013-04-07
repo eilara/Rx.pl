@@ -7,8 +7,7 @@ use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
 extends 'Reactive::Observable';
 
-# when we complete/error we delete this to block any more
-# notifications from taking place
+# when we complete/error we delete this to mark deactivation
 has observers => (is => 'ro', default => sub { weak_set });
 
 sub run {

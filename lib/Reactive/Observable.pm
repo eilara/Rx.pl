@@ -6,6 +6,8 @@ use AnyEvent;
 use Reactive::Disposable::Empty;
 use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
+use aliased 'Reactive::Observable::Subject';
+use aliased 'Reactive::Observable::Connectable';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::Map';
@@ -21,7 +23,6 @@ use aliased 'Reactive::Observable::Merge';
 use aliased 'Reactive::Observable::MergeNotifications';
 use aliased 'Reactive::Observable::MultiMerge';
 use aliased 'Reactive::Observable::CombineLatest';
-use aliased 'Reactive::Observable::Subject';
 use aliased 'Reactive::Observable::Delay';
 use aliased 'Reactive::Observable::Do';
 
@@ -127,6 +128,11 @@ sub from_list {
 sub subject {
     my $class = shift;
     return Subject->new;
+}
+
+sub publish {
+    my $self = shift;
+    return Connectable->new(wrap => $self);
 }
 
 # from time --------------------------------------------------------------------

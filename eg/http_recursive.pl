@@ -43,7 +43,7 @@ sub get_links {
 
 get_links->expand(sub{
     $_->{token}? get_links($_->{token})
-               : Observable->empty
+               : Observable->empty # no more links
 })->foreach(
     on_next  => sub{ say for @{$_->{links}} },
     on_error => sub{ say },

@@ -21,7 +21,7 @@ $iut->on_next(14);
 advance_and_check_event_count 0 => 3;
 is_deeply $next[2], 14, '3rd event';
 
-my $s2  = subscribe $iut;
+my $s2 = subscribe $iut;
 
 $iut->on_complete;
 

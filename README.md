@@ -10,8 +10,8 @@ Dependencies
 Moose, aliased, Coro, EV, AnyEvent, Set::Object, Cairo, Gtk3, EV::Glib, Glib,
 JSON, autobox::Core
 
-Examples:
----------
+Examples
+--------
 
 ### Sketch ###
 
@@ -156,6 +156,38 @@ sketch session, from mouse events to the sketch event:
 
 ![Sketch Marble Diagram](doc/sketch_marble_diagram.png)
 
+
+What Works
+----------
+
+* once
+* range
+* empty
+* never
+* throw
+* from\_list
+* subject
+* interval
+* timer
+* from\_stdin
+* let
+* map
+* expand
+* grep
+* count
+* take
+* skip
+* distinct\_changes
+* buffer
+* push
+* unshift
+* merge 2 observables, N observables, observable of observables
+* combine\_latest
+* delay
+* do
+* foreach
+* from\_http\_get using AnyEvent::HTTP
+* Gtk3 from\_mouse\_press, from\_mouse\_release, from\_mouse\_motion
 
 TODO
 ----
