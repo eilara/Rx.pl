@@ -176,6 +176,7 @@ What Works
 * grep
 * count
 * take
+* take\_latest
 * skip
 * distinct\_changes
 * buffer
