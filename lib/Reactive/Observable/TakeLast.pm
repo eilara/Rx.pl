@@ -1,4 +1,4 @@
-package Reactive::Observable::TakeLatest;
+package Reactive::Observable::TakeLast;
 
 use Moose;
 
@@ -11,7 +11,7 @@ augment observer_args => sub {
     return (count => $self->count, inner(@_));
 };
 
-package Reactive::Observable::TakeLatest::Observer;
+package Reactive::Observable::TakeLast::Observer;
 
 use Moose;
 

@@ -15,7 +15,7 @@ use aliased 'Reactive::Observable::Expand';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
-use aliased 'Reactive::Observable::TakeLatest';
+use aliased 'Reactive::Observable::TakeLast';
 use aliased 'Reactive::Observable::Skip';
 use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
@@ -200,9 +200,9 @@ sub take {
     return Take->new(wrap => $self, count => $count);
 }
 
-sub take_latest {
+sub take_last {
     my ($self, $count) = @_;
-    return TakeLatest->new(wrap => $self, count => $count);
+    return TakeLast->new(wrap => $self, count => $count);
 }
 
 sub skip {
