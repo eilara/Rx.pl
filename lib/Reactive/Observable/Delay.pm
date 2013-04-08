@@ -46,7 +46,7 @@ sub on_next {
     weaken (my $weak_disposable = $disposable);
 
     my $handle = $self->schedule_once($self->delay, sub {
-        return unless $self->disposable_parent;
+        return if $self->is_disposing;
         $self->unwrap_parent($weak_disposable);
         $wrap->on_next($value);
     });

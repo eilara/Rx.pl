@@ -45,6 +45,7 @@ sub on_next {
 
 sub on_child_complete {
     my ($self, $child_disposable) = @_;
+    return if $self->is_disposing;
     $self->unwrap_parent($child_disposable) if $child_disposable;
     $self->on_complete_final if --$self->{num_started} == 0;
 }

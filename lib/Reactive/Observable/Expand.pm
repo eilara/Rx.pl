@@ -54,8 +54,8 @@ sub on_next {
         on_error    => sub { $self->on_error(shift) },
     );
 
-    return unless $self->is_active; # subscription could have caused us
-                                    # to deactivate
+    return if $self->is_disposing; # subscription could have caused us
+                                   # to deactivate
 
     $disposable->wrap($handle);
     $self->wrap_with_parent($disposable);
@@ -63,7 +63,7 @@ sub on_next {
 
 sub on_child_complete {
     my ($self, $child_disposable) = @_;
-    return unless $self->is_active;
+    return if $self->is_disposing;
     $self->unwrap_parent($child_disposable) if $child_disposable;
     $self->on_complete_final if --$self->{num_started} == 0;
 }

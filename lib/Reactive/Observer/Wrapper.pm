@@ -1,6 +1,7 @@
 package Reactive::Observer::Wrapper;
 
 use Moose;
+use aliased 'Reactive::Observer::Empty' => 'Empty';
 
 # disposable_parent - disposable wrapping subscription to wrapped
 #                     observable of wrapped observer
@@ -29,7 +30,8 @@ sub on_error {
     $self->unwrap;
 }
 
-sub is_active { shift->{disposable_parent} }
+# has my subscription vanished, could be before we complete or unwrap
+sub is_disposing { !defined(shift->{disposable_parent}) }
 
 sub wrap_with_parent {
     my ($self, $child) = @_;
@@ -43,8 +45,8 @@ sub unwrap_parent {
 
 sub unwrap {
     my $self = shift;
-    delete $self->{wrap};
-    $self->unwrap_parent if $self->is_active;
+    $self->{wrap} = Empty->new;
+    $self->unwrap_parent unless $self->is_disposing;
 }
 
 1;

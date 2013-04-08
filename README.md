@@ -180,6 +180,7 @@ What Works
 * take
 * take\_last
 * skip
+* repeat
 * distinct\_changes
 * buffer
 * push
@@ -206,11 +207,10 @@ TODO
 
 * skip/take while/until/last, first/last
   timestamp, max/min/sum/average, fold/scan,
-  repeat (resubscribes to self), retry, any, all, group by,
+  retry, any, all, group by,
   fork join, blocking to\_list, replay subject,
   ref count connectable, timestamp, time\_interval,
   async subject prune
-
 
 * timeout - from subscription to 1st on\_next and timeout
   between on\_next
@@ -245,6 +245,9 @@ TODO
 
 * take\_while/skip/until should take sub or observable, "while"
   does not include edge, "until" does
+
+* once(1)->repeat->take(1) = infinite recursion with no notifications
+  maybe move away from immediate mode scheduling?
 
 * observable from SDL mouse/keyboard events, sockets, filesystem events
 

@@ -18,17 +18,17 @@ my $Wikipedia = 'http://en.wikipedia.org/w/api.php';
 my $Url       = "$Wikipedia?action=query&list=search&format=json".
                 "&srlimit=1&srsearch=";
 
-sub decode_query($)
+sub decode_query
     { decode_json (shift->body)->{query}->{search}->[0]->{snippet} }
 
-sub get_summary($) { Observable->from_http_get($Url. shift) }
+sub get_summary { Observable->from_http_get($Url. shift) }
 
 Observable->merge(
     
-    [@Queries]->map(sub{ uri_escape  $_ })
-              ->map(sub{ get_summary $_ })
-
-)->map(sub{ decode_query $_ })->foreach(
+    [@Queries]->map(\&uri_escape)   # -> list of string
+              ->map(\&get_summary)  # -> list of observables
+                                    #    of http response
+)->map(\&decode_query)->foreach(    # -> observable of snippets
 
     on_next  => sub { say },
     on_error => sub { say },

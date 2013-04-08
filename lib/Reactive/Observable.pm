@@ -20,6 +20,7 @@ use aliased 'Reactive::Observable::TakeLast';
 use aliased 'Reactive::Observable::TakeUntilPredicate';
 use aliased 'Reactive::Observable::TakeWhilePredicate';
 use aliased 'Reactive::Observable::Skip';
+use aliased 'Reactive::Observable::Repeat';
 use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
 use aliased 'Reactive::Observable::Push';
@@ -86,8 +87,8 @@ sub range {
     my ($class, $from, $size) = @_;
     return FromClosure->new(on_subscribe => sub {
         my $observer = shift;
-        my $i    = $from;
-        my $to   = $from + $size;
+        my $i  = $from;
+        my $to = $from + $size;
         while ($i < $to) { $observer->on_next($i++) }
         $observer->on_complete;
         return empty_disposable;
@@ -226,6 +227,11 @@ sub take_last {
 sub skip {
     my ($self, $count) = @_;
     return Skip->new(wrap => $self, count => $count);
+}
+
+sub repeat {
+    my ($self, $count) = @_;
+    return Repeat->new(wrap => $self, count => $count);
 }
 
 sub distinct_changes {
