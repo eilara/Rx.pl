@@ -167,6 +167,8 @@ What Works
 * throw
 * from\_list
 * subject
+* publish
+* defer
 * interval
 * timer
 * from\_stdin
@@ -176,7 +178,7 @@ What Works
 * grep
 * count
 * take
-* take\_latest
+* take\_last
 * skip
 * distinct\_changes
 * buffer
@@ -190,13 +192,25 @@ What Works
 * from\_http\_get using AnyEvent::HTTP
 * Gtk3 from\_mouse\_press, from\_mouse\_release, from\_mouse\_motion
 
+
+Differences vs. .NET Rx
+-----------------------
+
+* we don't call dispose and use Perl ref counting instead
+
+* more Perlish operator names
+
+
 TODO
 ----
 
 * skip/take while/until/last, first/last
   timestamp, max/min/sum/average, fold/scan,
   repeat (resubscribes to self), retry, any, all, group by,
-  fork join, blocking to\_list
+  fork join, blocking to\_list, replay subject,
+  ref count connectable, timestamp, time\_interval,
+  async subject prune
+
 
 * timeout - from subscription to 1st on\_next and timeout
   between on\_next
@@ -221,6 +235,16 @@ TODO
 * http client needs http\_get\_json
 
 * support take(0)
+
+* distinct\_changes should have a comparator param
+
+* connectable observable connect() should return disposable
+  instead of disconnect hack
+
+* use ref count connectable for hot observables with retries
+
+* take\_while/skip/until should take sub or observable, "while"
+  does not include edge, "until" does
 
 * observable from SDL mouse/keyboard events, sockets, filesystem events
 

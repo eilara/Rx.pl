@@ -49,3 +49,11 @@ get_links->expand(sub{
     on_error => sub{ say },
 );
 
+# another way:
+# get_links->expand(sub{ get_links($_->{token}) })
+#          ->take_until(sub{ $_->{token} })
+# })->foreach(
+#     on_next  => sub{ say for @{$_->{links}} },
+#     on_error => sub{ say },
+# );
+

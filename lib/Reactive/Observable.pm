@@ -8,6 +8,7 @@ use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Subject';
 use aliased 'Reactive::Observable::Connectable';
+use aliased 'Reactive::Observable::Defer';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::Map';
@@ -134,6 +135,11 @@ sub subject {
 sub publish {
     my $self = shift;
     return Connectable->new(wrap => $self);
+}
+
+sub defer {
+    my ($self, $projection) = @_;
+    return Defer->new(projection => $projection);
 }
 
 # from time --------------------------------------------------------------------
