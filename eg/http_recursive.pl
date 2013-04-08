@@ -27,8 +27,10 @@ my $Wikipedia = 'http://en.wikipedia.org/w/api.php';
 my $Links     = "$Wikipedia?action=query&prop=links&format=json".
                 "&pageids=$Page&pllimit=$Batch";
 
+# extract the 'continue' token from a JSON Wikipedia result
 sub decode_token { $_->{'query-continue'}->{links}->{plcontinue} }
 
+# extract the list of link titles from a JSON Wikipedia result
 sub decode_links
     { [$_->{query}->{pages}->{$Page}->{links}->map(sub{ $_->{title} })] }
 
@@ -41,19 +43,19 @@ sub get_links {
                ->map(sub{ {token => decode_token, links => decode_links} });
 }
 
-get_links->expand(sub{
-    $_->{token}? get_links($_->{token})
-               : Observable->empty # no more links
-})->foreach(
-    on_next  => sub{ say for @{$_->{links}} },
-    on_error => sub{ say },
-);
+get_links->expand(sub{ get_links $_->{token} })
+         ->take_until(sub{ !$_->{token} })
+         ->foreach(
+               on_next  => sub{ say for @{$_->{links}} },
+               on_error => sub{ say },
+           );
 
-# another way:
-# get_links->expand(sub{ get_links($_->{token}) })
-#          ->take_until(sub{ $_->{token} })
-# })->foreach(
-#     on_next  => sub{ say for @{$_->{links}} },
-#     on_error => sub{ say },
-# );
 
+# another possible implementation:
+#get_links->expand(sub{
+#    $_->{token}? get_links($_->{token})
+#               : Observable->empty # no more links
+#})->foreach(
+#    on_next  => sub{ say for @{$_->{links}} },
+#    on_error => sub{ say },
+#);

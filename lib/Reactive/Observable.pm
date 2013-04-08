@@ -17,6 +17,8 @@ use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
 use aliased 'Reactive::Observable::TakeLast';
+use aliased 'Reactive::Observable::TakeUntilPredicate';
+use aliased 'Reactive::Observable::TakeWhilePredicate';
 use aliased 'Reactive::Observable::Skip';
 use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
@@ -204,6 +206,16 @@ sub count {
 sub take {
     my ($self, $count) = @_;
     return Take->new(wrap => $self, count => $count);
+}
+
+sub take_until {
+    my ($self, $predicate) = @_;
+    return TakeUntilPredicate->new(wrap => $self, predicate => $predicate);
+}
+
+sub take_while {
+    my ($self, $predicate) = @_;
+    return TakeWhilePredicate->new(wrap => $self, predicate => $predicate);
 }
 
 sub take_last {
