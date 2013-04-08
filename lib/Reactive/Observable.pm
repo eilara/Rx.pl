@@ -14,6 +14,7 @@ use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Expand';
 use aliased 'Reactive::Observable::Grep';
+use aliased 'Reactive::Observable::Catch';
 use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
 use aliased 'Reactive::Observable::TakeLast';
@@ -197,6 +198,14 @@ sub expand {
 sub grep {
     my ($self, $predicate) = @_;
     return Grep->new(wrap => $self, predicate => $predicate);
+}
+
+sub catch {
+    my ($self, $thing) = @_;
+    # sugar - if projection is observable, we will wrap it in a sub
+    my $projection = UNIVERSAL::isa($thing, __PACKAGE__)?
+        sub{ $thing }: $thing;
+    return Catch->new(wrap => $self, projection => $projection);
 }
 
 sub count {

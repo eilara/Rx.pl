@@ -2,9 +2,9 @@ package Reactive::Observable::Map;
 
 use Moose;
 
-extends 'Reactive::Observable::Wrapper';
-
 has projection => (is => 'ro', required => 1);
+
+extends 'Reactive::Observable::Wrapper';
 
 augment observer_args => sub {
     my ($self) = @_;

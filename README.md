@@ -176,6 +176,7 @@ What Works
 * map
 * expand
 * grep
+* catch
 * count
 * take
 * take\_last
