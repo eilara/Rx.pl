@@ -182,6 +182,7 @@ What Works
 * take\_last
 * skip
 * repeat
+* retry
 * distinct\_changes
 * buffer
 * push
@@ -208,7 +209,7 @@ TODO
 
 * skip/take while/until/last, first/last
   timestamp, max/min/sum/average, fold/scan,
-  retry, any, all, group by,
+  any, all, group by,
   fork join, blocking to\_list, replay subject,
   ref count connectable, timestamp, time\_interval,
   async subject prune
