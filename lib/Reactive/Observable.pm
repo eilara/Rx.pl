@@ -1,6 +1,7 @@
 package Reactive::Observable;
 
 use Moose;
+use Scalar::Util qw(weaken);
 use Reactive::Scheduler::Coro;
 use AnyEvent;
 use Reactive::Disposable::Empty;
@@ -241,6 +242,14 @@ sub skip {
 sub repeat {
     my ($self, $count) = @_;
     return Repeat->new(wrap => $self, count => $count);
+}
+
+sub retry {
+    my ($self, $count) = @_;
+    return $self->catch(sub{ my $error = shift;
+                             (!defined($count) || $count > 0)?
+                                 $self->retry($count - 1):
+                                 __PACKAGE__->throw($error) })
 }
 
 sub distinct_changes {

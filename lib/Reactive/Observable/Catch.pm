@@ -19,7 +19,6 @@ use Moose;
 has projection => (is => 'ro', required => 1);
 
 extends 'Reactive::Observer::Wrapper';
-
 sub on_error {
     my ($self, $error) = @_;
     my $next_observable;
@@ -29,10 +28,11 @@ sub on_error {
     };
     my $err = $@;
     if ($err) {
-        return $self->wrap->on_error($err);
+        $self->wrap->on_error($err);
         $self->unwrap;
+        return;
     }
-    my $disposable = $next_observable->subscribe_observer($self);
+    my $disposable = $next_observable->subscribe_observer($self->wrap);
     $self->wrap_with_parent($disposable) unless $self->is_disposing;
 }
 

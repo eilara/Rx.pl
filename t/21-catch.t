@@ -21,4 +21,12 @@ subtest 'transform error into message and repeat' => sub {
 };
 restart;
 
+subtest 'transform one error into another' => sub {
+    my $s = subscribe Observable->throw('X')
+                                ->catch(sub{ Observable->throw('Y') });
+    advance_and_check_event_count 1 => 0, 0, 1;
+    is_deeply \@error, ['Y'];
+};
+restart;
+
 done_testing;
