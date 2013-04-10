@@ -9,6 +9,7 @@ use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Subject';
 use aliased 'Reactive::Observable::Connectable';
+use aliased 'Reactive::Observable::Materialize';
 use aliased 'Reactive::Observable::Defer';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
@@ -132,18 +133,12 @@ sub from_list {
     });
 }
 
-sub subject {
-    my $class = shift;
-    return Subject->new;
-}
-
-sub publish {
-    my $self = shift;
-    return Connectable->new(wrap => $self);
-}
+sub subject     { Subject->new }
+sub publish     { Connectable->new(wrap => shift) }
+sub materialize { Materialize->new(wrap => shift) }
 
 sub defer {
-    my ($self, $projection) = @_;
+    my ($class, $projection) = @_;
     return Defer->new(projection => $projection);
 }
 
