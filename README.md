@@ -96,9 +96,10 @@ Now the crux of the biscuit, which we will go over line-by-line:
     $sketch = $button_stream->combine_latest($motion_stream)
 
 _combine_latest_ passes every event from both streams. It attaches to each
-notification from one of the stream, the last received value from the other
+notification from one of the streams, the last received value from the other
 stream. So we now have a tuple of [button\_state, mouse\_position] fired
-on each button press/release/mouse move.
+on each button press/release/mouse move. Each tuple includes the latest events
+of each stream.
 
 Here is the marble diagram for a button press, followed by some mouse motion
 and a button release, as we would get it after piping through
@@ -212,7 +213,7 @@ TODO
 * skip/take while/until/last, first/last
   timestamp, max/min/sum/average, fold/scan,
   any, all, group by,
-  fork join, blocking to\_list, replay subject,
+  fork join, blocking to\_list,
   ref count connectable, timestamp, time\_interval,
   async subject prune
 

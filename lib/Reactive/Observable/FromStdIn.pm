@@ -18,6 +18,11 @@ sub run {
     my $cleanup = sub
         { $Subscription_Count-- if $Subscription_Count > 0 };
 
+    # disposable_closure   = subscription to ref counted cleanup
+    # disposable_inner     = subscription on subject
+    # disposables          = we want both subscriptions
+    # disposable_wrapper   = the subscription returned
+
     my $disposable_closure = DisposableClosure->new(cleanup => $cleanup);
     my $disposable_inner   = $Subject->subscribe_observer($observer);
     my $disposables        = [$disposable_inner, $disposable_closure];
