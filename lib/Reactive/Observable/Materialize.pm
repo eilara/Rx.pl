@@ -42,13 +42,16 @@ sub on_error {
 package Reactive::Observable::Materialize::Notification::Next;
 use Moose;
 has wrap => (is => 'ro', required => 1);
+sub accept { pop->on_next(shift->wrap) }
 
 package Reactive::Observable::Materialize::Notification::Complete;
 use Moose;
+sub accept { pop->on_complete }
 
 package Reactive::Observable::Materialize::Notification::Error;
 use Moose;
 has wrap => (is => 'ro', required => 1);
+sub accept { pop->on_error(shift->wrap) }
 
 1;
 

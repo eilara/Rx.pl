@@ -5,10 +5,10 @@ use Set::Object qw(weak_set);
 use aliased 'Reactive::Disposable::Empty'   => 'EmptyDisposable';
 use aliased 'Reactive::Disposable::Wrapper' => 'DisposableWrapper';
 
-extends 'Reactive::Observable';
-
 # when we complete/error we delete this to mark deactivation
 has observers => (is => 'ro', default => sub { weak_set });
+
+extends 'Reactive::Observable';
 
 sub run {
     my ($self, $observer) = @_;

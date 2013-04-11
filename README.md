@@ -169,6 +169,7 @@ What Works
 * subject
 * publish
 * materialize
+* memoize
 * defer
 * interval
 * timer

@@ -8,6 +8,7 @@ use Reactive::Disposable::Empty;
 use aliased 'Reactive::Observer';
 use aliased 'Reactive::Observable::FromClosure';
 use aliased 'Reactive::Observable::Subject';
+use aliased 'Reactive::Observable::ReplaySubject';
 use aliased 'Reactive::Observable::Connectable';
 use aliased 'Reactive::Observable::Materialize';
 use aliased 'Reactive::Observable::Defer';
@@ -136,6 +137,14 @@ sub from_list {
 sub subject     { Subject->new }
 sub publish     { Connectable->new(wrap => shift) }
 sub materialize { Materialize->new(wrap => shift) }
+
+sub memoize {
+    my $self = shift;
+    return Connectable->new(
+        wrap    => $self->materialize,
+        subject => ReplaySubject->new,
+    )->connect;
+}
 
 sub defer {
     my ($class, $projection) = @_;
