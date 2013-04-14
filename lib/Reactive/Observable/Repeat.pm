@@ -5,12 +5,12 @@ use Moose;
 extends 'Reactive::Observable::Wrapper';
 
 # count = undef means repeat forever
-has count => (is => 'ro');
+has _count => (is => 'ro');
 
 augment observer_args => sub {
     my ($self) = @_;
     return (
-        remaining  => $self->count,
+        remaining  => $self->_count,
         observable => $self->wrap,
         inner(@_));
 };
@@ -40,11 +40,7 @@ sub on_complete {
     $self->wrap_with_parent($disposable) unless $self->is_disposing;
 }
 
-before unwrap => sub {
-    my $self = shift;
-    delete $self->{projection};
-    delete $self->{observable};
-};
+before unwrap => sub { delete shift->{observable} };
 
 1;
 

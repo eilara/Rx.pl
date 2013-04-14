@@ -2,13 +2,13 @@ package Reactive::Observable::Skip;
 
 use Moose;
 
-has count => (is => 'ro', required => 1);
+has _count => (is => 'ro', required => 1);
 
 extends 'Reactive::Observable::Wrapper';
 
 augment observer_args => sub {
     my ($self) = @_;
-    return (count => $self->count, inner(@_));
+    return (count => $self->_count, inner(@_));
 };
 
 package Reactive::Observable::Skip::Observer;

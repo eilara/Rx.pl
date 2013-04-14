@@ -119,7 +119,6 @@ shifts the buffer one event to the right. Thus we get a pair of the
 latest 2 notifications. Here is the stream above piped though _buffer_:
 
       ---time-->
-
     combine_latest -[0,P1]-[1,P1]----[1,P2]----[1,P3]----[0,P3]--
                           [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3], 
     buffer(2,1)    ------- [1,P1],---[1,P2],---[1,P3],---[0,P3],-
@@ -147,6 +146,7 @@ be sent to the sketch subscribers:
                             
 Leading to the following marble diagram:
 
+    ---time-->
                           [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3], 
     buffer(2,1)    ------- [1,P1],---[1,P2],---[1,P3],---[0,P3],-
                           ]         ]         ]         ]

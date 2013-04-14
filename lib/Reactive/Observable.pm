@@ -215,12 +215,13 @@ sub catch {
 
 sub count {
     my ($self) = @_;
+    print "x=$self\n";
     return Count->new(wrap => $self);
 }
 
 sub take {
     my ($self, $count) = @_;
-    return Take->new(wrap => $self, count => $count);
+    return Take->new(wrap => $self, _count => $count);
 }
 
 sub take_until {
@@ -235,17 +236,17 @@ sub take_while {
 
 sub take_last {
     my ($self, $count) = @_;
-    return TakeLast->new(wrap => $self, count => $count);
+    return TakeLast->new(wrap => $self, _count => $count);
 }
 
 sub skip {
     my ($self, $count) = @_;
-    return Skip->new(wrap => $self, count => $count);
+    return Skip->new(wrap => $self, _count => $count);
 }
 
 sub repeat {
     my ($self, $count) = @_;
-    return Repeat->new(wrap => $self, count => $count);
+    return Repeat->new(wrap => $self, _count => $count);
 }
 
 sub retry {
