@@ -19,6 +19,7 @@ use Moose;
 has projection => (is => 'ro', required => 1);
 
 extends 'Reactive::Observer::Wrapper';
+
 sub on_error {
     my ($self, $error) = @_;
     my $next_observable;

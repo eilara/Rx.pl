@@ -14,6 +14,7 @@ use aliased 'Reactive::Observable::Materialize';
 use aliased 'Reactive::Observable::Defer';
 use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
+use aliased 'Reactive::Observable::FromCursesStdIn';
 use aliased 'Reactive::Observable::Map';
 use aliased 'Reactive::Observable::Expand';
 use aliased 'Reactive::Observable::Grep';
@@ -181,6 +182,8 @@ sub timer {
 
 sub from_stdin { return FromStdIn->new }
 
+sub from_curses_stdin { return FromCursesStdIn->new }
+
 # projections ------------------------------------------------------------------
 
 sub let {
@@ -253,7 +256,7 @@ sub retry {
     my ($self, $count) = @_;
     return $self->catch(sub{ my $error = shift;
                              (!defined($count) || $count > 0)?
-                                 $self->retry($count - 1):
+                                 $self->retry($count? ($count-1): undef):
                                  __PACKAGE__->throw($error) })
 }
 
