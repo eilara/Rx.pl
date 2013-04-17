@@ -34,14 +34,10 @@ sub on_next {
     my ($self, $value) = @_;
     $self->{num_started}++;
 
-    local $_ = $value;
     $self->wrap->on_next($value);
-
+    local $_ = $value;
     my $next_observable;
-    eval {
-        $_ = $value;
-        $next_observable = $self->projection->($_);
-    };
+    eval { $next_observable = $self->projection->($_) };
     my $err = $@;
     return $self->on_error($err) if $err;
 

@@ -7,7 +7,7 @@ use Reactive::Test::ObservableFixture;
 # merge a sequence with itself in fluent style.
 # without "let", this would require a temp var:
 #    $o = Observable->from_list(1, 2, 3);
-#    $merge = $o->merge( $o->sub({ $_ }) );
+#    $merge = $o->merge( $o->map(sub{ $_ }) );
 my $s = subscribe
     Observable->from_list(1, 2, 3)
               ->let(sub{ $_[0]->merge( $_[0]->map(sub{ $_ }) ) });

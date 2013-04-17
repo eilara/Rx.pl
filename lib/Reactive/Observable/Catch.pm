@@ -22,11 +22,9 @@ extends 'Reactive::Observer::Wrapper';
 
 sub on_error {
     my ($self, $error) = @_;
+    local $_ = $error;
     my $next_observable;
-    eval {
-        $_ = $error;
-        $next_observable = $self->projection->($_);
-    };
+    eval { $next_observable = $self->projection->($_) };
     my $err = $@;
     if ($err) {
         $self->wrap->on_error($err);

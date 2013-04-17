@@ -16,6 +16,7 @@ use aliased 'Reactive::Observable::Generate';
 use aliased 'Reactive::Observable::FromStdIn';
 use aliased 'Reactive::Observable::FromCursesStdIn';
 use aliased 'Reactive::Observable::Map';
+use aliased 'Reactive::Observable::Scan';
 use aliased 'Reactive::Observable::Expand';
 use aliased 'Reactive::Observable::Grep';
 use aliased 'Reactive::Observable::Catch';
@@ -23,6 +24,7 @@ use aliased 'Reactive::Observable::Count';
 use aliased 'Reactive::Observable::Take';
 use aliased 'Reactive::Observable::TakeLast';
 use aliased 'Reactive::Observable::TakeUntilPredicate';
+use aliased 'Reactive::Observable::TakeUntilObservable';
 use aliased 'Reactive::Observable::TakeWhilePredicate';
 use aliased 'Reactive::Observable::Skip';
 use aliased 'Reactive::Observable::Repeat';
@@ -198,6 +200,12 @@ sub map {
     return Map->new(wrap => $self, projection => $projection);
 }
 
+sub scan {
+    my ($self, $seed, $projection) = @_;
+    return Scan->new
+        (wrap => $self, seed => $seed, projection => $projection);
+}
+
 sub expand {
     my ($self, $projection) = @_;
     return Expand->new(wrap => $self, projection => $projection);
@@ -228,8 +236,10 @@ sub take {
 }
 
 sub take_until {
-    my ($self, $predicate) = @_;
-    return TakeUntilPredicate->new(wrap => $self, predicate => $predicate);
+    my ($self, $thing) = @_;
+    return ref $thing eq 'CODE'? 
+        TakeUntilPredicate->new(wrap => $self, predicate => $thing):
+        TakeUntilObservable->new(o1 => $self, o2 => $thing);
 }
 
 sub take_while {

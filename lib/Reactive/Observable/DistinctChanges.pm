@@ -16,8 +16,7 @@ sub on_next {
     my ($self, $value) = @_;
     my $last_value = $self->last_value;
     $self->last_value($value);
-    return unless defined $last_value;
-    return if $value ~~ $last_value;
+    return if defined($last_value) && $value ~~ $last_value;
     $self->wrap->on_next($value);
 }
 

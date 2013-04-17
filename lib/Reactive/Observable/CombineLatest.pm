@@ -33,6 +33,7 @@ sub on_next {
     $self->$this_method($value);
     local $_ = [$self->last_value_1, $self->last_value_2];
     $self->wrap->on_next($_);
+
 }
 
 sub on_complete {

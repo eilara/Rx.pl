@@ -177,11 +177,15 @@ What Works
 * from\_stdin
 * let
 * map
+* scan
 * expand
 * grep
 * catch
 * count
 * take
+* take\_while predicate
+* take\_until predicate
+* take\_until observable on_next
 * take\_last
 * skip
 * repeat
@@ -211,7 +215,7 @@ TODO
 ----
 
 * skip/take while/until/last, first/last
-  timestamp, max/min/sum/average, fold/scan,
+  timestamp, max/min/sum/average, fold,
   any, all, group by,
   fork join, blocking to\_list,
   ref count connectable, timestamp, time\_interval,

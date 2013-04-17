@@ -1,5 +1,4 @@
 package Reactive::Observable::TakeUntilPredicate;
-
 use Moose;
 
 has predicate => (is => 'ro', required => 1);
@@ -32,4 +31,3 @@ sub on_next {
 }
 
 1;
-
