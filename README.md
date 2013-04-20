@@ -4,16 +4,58 @@ Rx.pl
 
 Microsoft Reactive Extensions Clone in Perl
 
+What
+----
+
+Working on lists with map/grep/List::Util/etc. is fun. But Why not
+have these powerful operators available when working with lists
+of events that have NOT happened yet? With `Reactive` you can.
+
+Use it for:
+
+* Elegant async programming without callback nesting
+* Managing and coordinating events, e.g. start an HTTP request when
+  timeout on key press
+* Programming with stream transformations, instead of objects and
+  methods
+* Stop writing and rewriting retry, timeout, throttle, buffer, window,
+  counters, caching, and aggregate functions for each project. Instead
+  create your processes as observables, then enjoy a rich library of
+  existing operators
+* Useful for network and UI programming  
+
+
+Relationship to...
+------------------
+
+* Generators (e.g. `List::Gen`) - similar but no concept of time
+
+* Promises / Futures - similar but more limited. Focuses on scalar
+  values instead of exploiting the push/pull observable/list duality.
+  Observables are richer in operators and more expressive. Promises /
+  Futures can be emulated, if you wish
+
+
 Dependencies
 ------------
 
 Moose, aliased, Coro, EV, AnyEvent, Set::Object, Cairo, Gtk3, EV::Glib, Glib,
-JSON, autobox::Core
+JSON, autobox::Core, Curses
+
 
 Examples
 --------
 
+### HTTP ###
+
+See `eg/http_*` for HTTP examples. They are the common promise/future
+examples, of chain, parallel, repeat etc. 
+
+
 ### Sketch ###
+
+See `eg/sketch_no_rx.pl` and `eg/sketch_rx.pl` for examples of a simple
+Gtk3 sketch app with and without Rx.
 
 To create a mouse sketching program, we want to transform low-level mouse
 events in to a single application level event called _sketch_. The sketch
@@ -188,6 +230,7 @@ What Works
 * take\_until observable on_next
 * take\_last
 * skip
+* skip\_until observable on_next
 * repeat
 * retry
 * distinct\_changes
@@ -200,6 +243,8 @@ What Works
 * do
 * foreach
 * from\_http\_get using AnyEvent::HTTP
+* from\_stdin AnyEvent line by line
+* from\_curses\_stdin for AnyEvent character input
 * Gtk3 from\_mouse\_press, from\_mouse\_release, from\_mouse\_motion
 
 
@@ -218,8 +263,7 @@ TODO
   timestamp, max/min/sum/average, fold,
   any, all, group by,
   fork join, blocking to\_list,
-  ref count connectable, timestamp, time\_interval,
-  async subject prune
+  ref count connectable, timestamp, time\_interval
 
 * timeout - from subscription to 1st on\_next and timeout
   between on\_next
@@ -265,7 +309,6 @@ TODO
   online spellchecker, image download robot, proxy, konami code, sketch 
   with bleeding ink and smoothing, erase, color change, etc. stock
   ticker with running averages, max, stddev and other window funcs,
-  promise examples
 
 LINKS
 -----

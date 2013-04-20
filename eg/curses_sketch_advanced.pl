@@ -63,4 +63,10 @@ $xy->publish->connect
 
 cleanup;
 
+__END__
 
+TODO
+    - change cursor style dependeing on drawing mode
+    - status bar shows x,y and brush and mode
+    - continuous drawing vs. pixel drawing
+    - mouse support
