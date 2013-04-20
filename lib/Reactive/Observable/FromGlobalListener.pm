@@ -11,6 +11,7 @@ my ($Subject, $Handle, $Subscription_Count);
 
 sub run {
     my ($self, $observer) = @_;
+
     if (++$Subscription_Count == 1) { # 1st subscription
         $Subject = Reactive::Observable->subject;
         $Handle  = $self->build_global_listener(

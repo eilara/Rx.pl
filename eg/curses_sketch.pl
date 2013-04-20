@@ -33,7 +33,7 @@ my $brush = $stdin->grep(sub{ exists $brush{$_} })
                   ->distinct_changes;
 
 $stdin->grep(sub{ exists $move{$_} }) # only move
-      ->map(sub{ $move{$_} })         # we want delta not key
+      ->map(sub{ $move{$_} })         # we want delta not key pressed
       ->unshift([0,0])                # draw 1st point on start
       ->scan([10,10], \&add_vectors)  # keep and update position
       ->combine_latest($brush)        # combine with latest brush selection

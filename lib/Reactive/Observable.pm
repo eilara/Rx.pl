@@ -27,6 +27,7 @@ use aliased 'Reactive::Observable::TakeUntilPredicate';
 use aliased 'Reactive::Observable::TakeUntilObservable';
 use aliased 'Reactive::Observable::TakeWhilePredicate';
 use aliased 'Reactive::Observable::Skip';
+use aliased 'Reactive::Observable::SkipUntilObservable';
 use aliased 'Reactive::Observable::Repeat';
 use aliased 'Reactive::Observable::DistinctChanges';
 use aliased 'Reactive::Observable::Buffer';
@@ -190,6 +191,7 @@ sub from_curses_stdin { return FromCursesStdIn->new }
 
 sub let {
     my ($self, $projection) = @_;
+    local $_ = $self;
     return $projection->($self);
 }
 
@@ -226,7 +228,6 @@ sub catch {
 
 sub count {
     my ($self) = @_;
-    print "x=$self\n";
     return Count->new(wrap => $self);
 }
 
@@ -255,6 +256,13 @@ sub take_last {
 sub skip {
     my ($self, $count) = @_;
     return Skip->new(wrap => $self, _count => $count);
+}
+
+sub skip_until {
+    my ($self, $thing) = @_;
+    return ref $thing eq 'CODE'? 
+        die 'TODO':
+        SkipUntilObservable->new(o1 => $self, o2 => $thing);
 }
 
 sub repeat {
