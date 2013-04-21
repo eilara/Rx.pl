@@ -7,13 +7,15 @@ Microsoft Reactive Extensions Clone in Perl
 What
 ----
 
-Working on lists with map/grep/List::Util/etc. is fun. But Why not
-have these powerful operators available when working with lists
-of events that have NOT happened yet? With `Reactive` you can.
+Working on lists with map/grep/List::Util/etc. is fun. But the
+items have to be in the list. Why can't we use the same powerful operators,
+even when the items are events in the future, and are not yet in the list?
+With `Reactive` you can.
 
 Use it for:
 
-* Elegant async programming without callback nesting
+* Elegant async programming without callback nesting, using operators
+  known from working with Perl lists
 * Managing and coordinating events, e.g. start an HTTP request when
   timeout on key press
 * Programming with stream transformations, instead of objects and
@@ -22,7 +24,7 @@ Use it for:
   counters, caching, and aggregate functions for each project. Instead
   create your processes as observables, then enjoy a rich library of
   existing operators
-* Useful for network and UI programming  
+* Useful for network and UI programming
 
 
 Relationship to...
