@@ -41,3 +41,25 @@ $stdin->grep(sub{ exists $move{$_} }) # only move
       ->foreach(\&draw_pen);
 
 cleanup;
+
+__END__
+
+ should be with less arrows toe nail clippings and subs, maybe like this,
+ though it be wrong in many ways:
+
+      my @stdin = Observable->from_curses_stdin;
+      my @quit  = grep { /q/ } @stdin;
+      my @brush = uniq { $a eq $b } 
+                  unshift 'X'
+                  map { $brush{$_} }
+                  grep {exists $brush{$_} }
+                  @stdin;
+      my @xy    = take_until $quit
+                  combine_latest $brush
+                  scan [[10,10], \&add_vectors]
+                  unshift [0,0]
+                  map { $move{$_} }
+                  grep { exists $move{$_}
+                  @stdin;
+
+      draw_pen($_) foreach @xy;                  

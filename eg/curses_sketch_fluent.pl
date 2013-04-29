@@ -42,21 +42,3 @@ Observable->from_curses_stdin
 
 cleanup;
 
-__END__
-
- should be:
-
-        foreach (from $stdin {
-            take_until from $stdin { grep /q/ }
-            combine_latest from $stdin {
-                grep exists $move{$_}
-                map $move{$_}
-                unshift 'X'
-                distinct_changes
-            }
-            scan [10,10], \&add_vectors
-            unshift [0,0]
-            map $move{$_}
-            grep exists $move{$_}
-        }) { &draw_pen }
-

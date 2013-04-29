@@ -38,9 +38,9 @@ my $stdin = Observable->from_curses_stdin;
 my $quit = $stdin->grep(sub{ /q/ });
 
 my $brush = $stdin->grep(sub{ exists $brush{$_} })
-                   ->map(sub{ $brush{$_} })
-                   ->unshift('X')
-                   ->distinct_changes;
+                  ->map(sub{ $brush{$_} })
+                  ->unshift('X')
+                  ->distinct_changes;
 
 my $toggle = $stdin->grep(sub{ / / })
                    ->scan(0, sub{ !$_[0] });
