@@ -8,23 +8,26 @@ What
 ----
 
 Working on lists with map/grep/List::Util/etc. is fun. But the
-items have to be in the list. Why can't we use the same powerful operators,
-even when the items are events in the future, and are not yet in the list?
-With `Reactive` you can.
+items have to be actually in the list. Why can't we use the same powerful
+operators, even when the items are not in the list, because they are events in
+the future? With `Reactive` you can.
 
 Use it for:
 
 * Elegant async programming without callback nesting, using operators
   known from working with Perl lists
 * Managing and coordinating events, e.g. start an HTTP request when
-  timeout on key press
+  timeout on key press if previous HTTP request was OK and arrived
+  in the last 10 seconds
 * Programming with stream transformations, instead of objects and
-  methods
+  methods. Say hello to beautiful functional designs with tightly
+  controlled state and side-effects
 * Stop writing and rewriting retry, timeout, throttle, buffer, window,
   counters, caching, and aggregate functions for each project. Instead
   create your processes as observables, then enjoy a rich library of
   existing operators
-* Useful for network and UI programming
+* Useful for network and UI programming, easy to unit test with virtual
+  time
 
 
 Relationship to...
@@ -32,8 +35,8 @@ Relationship to...
 
 * Generators (e.g. `List::Gen`) - similar but no concept of time
 
-* Promises / Futures - similar but more limited. Focuses on scalar
-  values instead of exploiting the push/pull observable/list duality.
+* Promises / Futures - similar, but focuses on scalar values
+  instead of exploiting the push/pull observable/list duality.
   Observables are richer in operators and more expressive. Promises /
   Futures can be emulated, if you wish
 
@@ -53,14 +56,37 @@ Examples
 See `eg/http_*` for HTTP examples. They are the common promise/future
 examples, of chain, parallel, repeat etc. 
 
-
 ### Sketch ###
 
 See `eg/sketch_no_rx.pl` and `eg/sketch_rx.pl` for examples of a simple
 Gtk3 sketch app with and without Rx.
 
+Note how when we program with events in this simple app, we need to:
+
+- implement a state machine with 2 state, pressed and not pressed, keep
+  a state variable, update it in 2 event handlers (mouse_press and 
+  mouse_release)
+
+- buffer the last point which was pressed or moved using 2 variables
+  so that you can draw a line between the current and last point
+
+- to get a point on click (press + release) and not just on mouse
+  move we need to call the draw() method twice, in 2 different
+  event handlers
+
+The problem is [scattering](http://en.wikipedia.org/wiki/Aspect-oriented_software_development#Crosscutting_concerns)
+of the drawing concerns between the event handlers.
+
+We want to handling buffering, filtering, side-effects (drawing),
+draw-toggle, each in one place. But we have to scatter them
+between the event handlers.
+
+Now lets do it by doing stream computations, instead of event
+driven programming on state machines. Using the Reactive stream
+combinators, each drawing concern will be in one place.
+
 To create a mouse sketching program, we want to transform low-level mouse
-events in to a single application level event called _sketch_. The sketch
+events into a single application level event called _sketch_. The sketch
 handler requires a pair of points. It will draw a line between them. We
 need to make sure the handler gets called on the correct events, and with the
 correct args:
@@ -97,19 +123,27 @@ identical):
 
     $sketch->subscribe(sub{
         my ($x0, $y0, $x1, $y1) = @{$_[0]};
-        draw_line_between_two_points($x0, $y0, $x1, $y1);
+        draw_line($x0, $y0, $x1, $y1);
     })
+
+The above code requires some explaining. Note how the concerns are 
+not tangled anymore (buffering is in 1 combinator, draw_line() is
+called only once). Also note the map/grep which make this code look
+like Perl Autobox code working on regular lists, though it is working
+on streams of events.
 
 Lets go over how the $sketch observable stream is built, going from
 low-level to high-level events, and showing the marble diagrams for the
-combinators applied:
+combinators applied. We start by creating streams from the low-level
+events:
 
     $button_press   = Observable->from_mouse_press($canvas)
                                 ->map(sub{ 1 });
     $button_release = Observable->from_mouse_release($canvas)
                                 ->map(sub{ 0 });
 
-This gives us 2 streams, one per mouse event, which we project to bools.
+This gives us 2 streams, one per mouse event, which we project to booleans
+using good ol' Perl map. But we want one stream not 2:
 
     $button_stream  = $button_press->merge($button_release)
                                    ->unshift(0);
@@ -176,6 +210,9 @@ receive:
     [[1,Pi],[1,Pj]] - draw a line [Pi,Pj] because user is sketching
     [[0,Pi],[1,Pi]] - draw a point, which is just the line [Pi,Pi]
     [[1,Pi],[0,Pi]] - mouse being released, don't draw anything
+
+We now understand exactly when we need to draw a line, and when we need
+to do nothing.
 
 We can find the notifications we need using grep. We seek only those buffers
 where the second event was fired with button pressed:
