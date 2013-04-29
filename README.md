@@ -21,11 +21,14 @@ Use it for:
   in the last 10 seconds
 * Programming with stream transformations, instead of objects and
   methods. Say hello to beautiful functional designs with tightly
-  controlled state and side-effects
+  controlled state, error handling, and side-effects. Replace boring
+  UML diagrams with fun marble diagrams
 * Stop writing and rewriting retry, timeout, throttle, buffer, window,
   counters, caching, and aggregate functions for each project. Instead
   create your processes as observables, then enjoy a rich library of
-  existing operators
+  existing operators. Reactive has combinators for each of the above
+  concerns, and you get them for free as long as you can wrap your
+  actions in an Observable object
 * Useful for network and UI programming, easy to unit test with virtual
   time
 
@@ -63,11 +66,11 @@ Gtk3 sketch app with and without Rx.
 
 Note how when we program with events in this simple app, we need to:
 
-- implement a state machine with 2 state, pressed and not pressed, keep
-  a state variable, update it in 2 event handlers (mouse_press and 
+- implement a state machine with 2 states, pressed and not pressed, keep
+  a state variable, update it inside 2 event handlers (mouse_press and 
   mouse_release)
 
-- buffer the last point which was pressed or moved using 2 variables
+- buffer the last point that was pressed or moved using 2 variables
   so that you can draw a line between the current and last point
 
 - to get a point on click (press + release) and not just on mouse
@@ -327,6 +330,8 @@ TODO
 * http client needs http\_get\_json
 
 * support take(0)
+
+* retry optional filter which exceptions should be retried    
 
 * distinct\_changes should have a comparator param
 

@@ -28,7 +28,6 @@ sub disconnect_handler {
 
 sub handle_event {
     my ($observer, $widget, $event) = @_;
-#    use Data::Dumper;print Dumper [@_];
     # sometimes Gtk sends here non-button events
     return FALSE if ref($event) eq 'Gtk3::Gdk::Event';
     my ($unknown, $ex, $ey, $state) = $event->window->get_pointer;
