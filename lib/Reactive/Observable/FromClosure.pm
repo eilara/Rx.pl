@@ -11,6 +11,5 @@ sub run {
     return $self->on_subscribe->($observer);
 }
 
-
 1;
 

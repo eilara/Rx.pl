@@ -80,11 +80,11 @@ Note how when we program with events in this simple app, we need to:
 The problem is [scattering](http://en.wikipedia.org/wiki/Aspect-oriented_software_development#Crosscutting_concerns)
 of the drawing concerns between the event handlers.
 
-We want to handling buffering, filtering, side-effects (drawing),
+We want to handle buffering, filtering, side-effects (drawing),
 draw-toggle, each in one place. But we have to scatter them
 between the event handlers.
 
-Now lets do it by doing stream computations, instead of event
+Now let's do it by doing stream computations, instead of event
 driven programming on state machines. Using the Reactive stream
 combinators, each drawing concern will be in one place.
 
@@ -135,7 +135,7 @@ called only once). Also note the map/grep which make this code look
 like Perl Autobox code working on regular lists, though it is working
 on streams of events.
 
-Lets go over how the $sketch observable stream is built, going from
+Let's go over how the $sketch observable stream is built, going from
 low-level to high-level events, and showing the marble diagrams for the
 combinators applied. We start by creating streams from the low-level
 events:
@@ -152,7 +152,7 @@ using good ol' Perl map. But we want one stream not 2:
                                    ->unshift(0);
 
 We merge them, and start the event with 0, assuming the user starts with
-button released. No way in Gtk actually to check this, but lets assume.
+button released. No way in Gtk actually to check this, but let's assume.
 
 Here is how a pair of mouse clicks would look like in a marble diagram:
 
