@@ -357,15 +357,15 @@ TODO
 LINKS
 -----
 
-https://github.com/richardszalay/raix/wiki/Reactive-Operators
-http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
-http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
-http://www.youtube.com/watch?v=ClHpkn\_qxos
-https://github.com/Reactive-Extensions/RxJS/wiki/Observable
-https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as
-http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10\_FlowControlExamples.cs
-https://github.com/Reactive-Extensions/RxJS-Examples
-https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
-http://blogs.msdn.com/b/rxteam/archive/2010/10/28/rx-design-guidelines.aspx
+* https://github.com/richardszalay/raix/wiki/Reactive-Operators
+* http://search.cpan.org/~miyagawa/Corona-0.1004/lib/Corona.pm
+* http://search.cpan.org/~alexmv/Net-Server-Coro-1.3/lib/Net/Server/Coro.pm
+* http://www.youtube.com/watch?v=ClHpkn\_qxos
+* https://github.com/Reactive-Extensions/RxJS/wiki/Observable
+* https://github.com/richardszalay/raix/blob/master/source/raix/src/raix/reactive/Observable.as
+* http://code.google.com/p/rx-samples/source/browse/trunk/src/RxSamples.ConsoleApp/10\_FlowControlExamples.cs
+* https://github.com/Reactive-Extensions/RxJS-Examples
+* https://github.com/mono/rx/tree/master/Rx/NET/Source/System.Reactive.Linq/Reactive/Linq
+* http://blogs.msdn.com/b/rxteam/archive/2010/10/28/rx-design-guidelines.aspx
 
 
