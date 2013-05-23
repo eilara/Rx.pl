@@ -1,6 +1,10 @@
 use strict;
 use warnings;
+
 use Test::More;
+
+use lib './t/lib';
+
 use Reactive;
 use Reactive::Test::ObservableFixture;
 

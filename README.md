@@ -57,7 +57,7 @@ Examples
 ### HTTP ###
 
 See `eg/http_*` for HTTP examples. They are the common promise/future
-examples, of chain, parallel, repeat etc. 
+examples, of chain, parallel, repeat etc.
 
 ### Sketch ###
 
@@ -67,7 +67,7 @@ Gtk3 sketch app with and without Rx.
 Note how when we program with events in this simple app, we need to:
 
 - implement a state machine with 2 states, pressed and not pressed, keep
-  a state variable, update it inside 2 event handlers (mouse_press and 
+  a state variable, update it inside 2 event handlers (mouse_press and
   mouse_release)
 
 - buffer the last point that was pressed or moved using 2 variables
@@ -121,7 +121,7 @@ Here is how we build the $sketch observable stream:
                             ->map(sub{ [map { @{$_->[1]} } @$_]});
 
 When you subscribe, you will get point pairs exactly as per the spec above,
-and all you need to do is draw a line (or a point if the positions are 
+and all you need to do is draw a line (or a point if the positions are
 identical):
 
     $sketch->subscribe(sub{
@@ -129,7 +129,7 @@ identical):
         draw_line($x0, $y0, $x1, $y1);
     })
 
-The above code requires some explaining. Note how the concerns are 
+The above code requires some explaining. Note how the concerns are
 not tangled anymore (buffering is in 1 combinator, draw_line() is
 called only once). Also note the map/grep which make this code look
 like Perl Autobox code working on regular lists, though it is working
@@ -162,7 +162,7 @@ Here is how a pair of mouse clicks would look like in a marble diagram:
     merge           ----------1-----0--------------1-------0----
     unshift(0)      0---------1-----0--------------1-------0----
 
-Another primitive stream of mouse events:    
+Another primitive stream of mouse events:
 
     $motion_stream = $Observable->from_mouse_motion($canvas)
                                 ->map(sub{ [$_->x, $_->y] })
@@ -191,7 +191,7 @@ _combine_latest_. Pi is i-th position of mouse.
     $motion_stream ---P1---------------P2--------P3--------------
     combine_latest -[0,P1]-[1,P1]----[1,P2]----[1,P3]----[0,P3]--
 
-However, we are interested in pairs of points:    
+However, we are interested in pairs of points:
 
                             ->buffer(2, 1)
 
@@ -201,7 +201,7 @@ latest 2 notifications. Here is the stream above piped though _buffer_:
 
       ---time-->
     combine_latest -[0,P1]-[1,P1]----[1,P2]----[1,P3]----[0,P3]--
-                          [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3], 
+                          [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3],
     buffer(2,1)    ------- [1,P1],---[1,P2],---[1,P3],---[0,P3],-
                           ]         ]         ]         ]
 
@@ -227,11 +227,11 @@ away the mouse button state, and flattening them, so that they are ready to
 be sent to the sketch subscribers:
 
                             ->map(sub{ [map { @{$_->[1]} } @$_]});
-                            
+
 Leading to the following marble diagram:
 
     ---time-->
-                          [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3], 
+                          [[0,P1],  [[1,P1],  [[1,P2],  [[1,P3],
     buffer(2,1)    ------- [1,P1],---[1,P2],---[1,P3],---[0,P3],-
                           ]         ]         ]         ]
     grep + map     -------[P1,P1]---[P1,P2]---[P2,P3]------------
@@ -311,7 +311,7 @@ TODO
   between on\_next
 
 * decide- does this use Coro, EV, Coro::EV, Coro::AnyEvent and/or
-  AnyEvent? EV works nicely with EV::Glib and Gtk3 at least on 
+  AnyEvent? EV works nicely with EV::Glib and Gtk3 at least on
   Linux, AnyEvent is more common for Http work, Coro is awesome
   but is it required? Currently uses a mish-mash of string, glue, fog,
   mirrors, and every single one of the above mentioned modules
@@ -331,7 +331,7 @@ TODO
 
 * support take(0)
 
-* retry optional filter which exceptions should be retried    
+* retry optional filter which exceptions should be retried
 
 * distinct\_changes should have a comparator param
 
@@ -350,7 +350,7 @@ TODO
 
 * demos- autocomplete with some terminal toolkit and menus, drag&drop,
   inactivity timer, perl news feed, perl activity graph, time flies,
-  online spellchecker, image download robot, proxy, konami code, sketch 
+  online spellchecker, image download robot, proxy, konami code, sketch
   with bleeding ink and smoothing, erase, color change, etc. stock
   ticker with running averages, max, stddev and other window funcs,
 

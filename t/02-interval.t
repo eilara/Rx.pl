@@ -1,7 +1,11 @@
 use strict;
 use warnings;
+
 use Test::More;
 use Reactive;
+
+use lib './t/lib';
+
 use Reactive::Test::ObservableFixture;
 
 my $iut = Observable->interval(400, $scheduler);
