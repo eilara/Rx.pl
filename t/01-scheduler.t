@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
+
+use lib './t/lib';
+
 use aliased 'Reactive::Test::Scheduler::Virtual' => 'IUT';
 
 my $iut = IUT->new(now => 100);

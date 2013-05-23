@@ -51,6 +51,18 @@ has scheduler => (is => 'ro', lazy_build => 1, handles =>
 
 sub _build_scheduler { Reactive::Scheduler::Coro->new }
 
+=head1 METHODS
+
+=head2 empty_disposable()
+
+For internal use.
+
+=head2 $self->subscribe(@handlers)
+
+Subscribe to the handlers - B<TODO> document better.
+
+=cut
+
 # subscribe with a set of handlers
 sub subscribe {
     my ($self, @handlers) = @_;
@@ -62,11 +74,25 @@ sub subscribe {
     return $disposable;
 }
 
+=head2 $self->subscribe_observer($observer)
+
+Subscribe to C<$observer> .
+
+=cut
+
 # subscribe with an observer
 sub subscribe_observer {
     my ($self, $observer) = @_;
     return $self->run($observer);
 }
+
+=head2 $self->sugarize_handlers(@handlers)
+
+Sugarize the handlers. If only one is present - it is on_next. Else
+it is treated as hash with C<'on_next'> , C<'on_error'>,
+C<'on_complete'> that can be empty.
+
+=cut
 
 sub sugarize_handlers {    
     my ($self, @handlers) = @_;
@@ -77,9 +103,21 @@ sub sugarize_handlers {
     return {%handlers};
 }
 
+=head2 maybe_scheduler(foo)
+
+Internal use.
+
+=cut
+
 sub maybe_scheduler($) { $_[0]? (scheduler => $_[0]): () }
 
 # creating --------------------------------------------------------------------
+
+=head2 $class->once($value)
+
+Emit the value once.
+
+=cut
 
 sub once {
     my ($class, $value) = @_;
@@ -90,6 +128,12 @@ sub once {
         return empty_disposable;
     });
 }
+
+=head2 $class->range($from, $size)
+
+Emit $size integers starting from $from .
+
+=cut
 
 sub range {
     my ($class, $from, $size) = @_;
@@ -103,6 +147,12 @@ sub range {
     });
 }
 
+=head2 $class->empty()
+
+The empty event list.
+
+=cut
+
 sub empty {
     my ($class) = @_;
     return FromClosure->new(on_subscribe => sub {
@@ -112,12 +162,26 @@ sub empty {
     });
 }
 
+=head2 $class->never()
+
+Never should happen.
+
+B<TODO> document better.
+
+=cut
+
 sub never {
     my ($class) = @_;
     return FromClosure->new(on_subscribe => sub {
         return empty_disposable;
     });
 }
+
+=head2 $class->throw()
+
+Throw any event into an on_error.
+
+=cut
 
 sub throw {
     my ($class, $err) = @_;
@@ -127,6 +191,12 @@ sub throw {
         return empty_disposable;
     });
 }
+
+=head2 $class->from_list(@list)
+
+Create a stream from a list.
+
+=cut
 
 sub from_list {
     my ($class, @list) = @_;
@@ -138,9 +208,35 @@ sub from_list {
     });
 }
 
+=head2 $class->subject()
+
+B<Internal use>
+
+=cut
+
 sub subject     { Subject->new }
+
+=head2 $class->publish()
+
+B<Internal use>
+
+=cut
+
 sub publish     { Connectable->new(wrap => shift) }
+
+=head2 $class->materialize()
+
+B<Internal use>
+
+=cut
+
 sub materialize { Materialize->new(wrap => shift) }
+
+=head2 $class->memoize()
+
+B<TODO> document.
+
+=cut
 
 sub memoize {
     my $self = shift;
@@ -150,12 +246,25 @@ sub memoize {
     )->connect;
 }
 
+=head2 $class->defer()
+
+B<TODO> document.
+
+=cut
+
 sub defer {
     my ($class, $projection) = @_;
     return Defer->new(projection => $projection);
 }
 
 # from time --------------------------------------------------------------------
+
+=head2 $class->interval($duration, $scheduler)
+
+Write an incremented integer (starting from 0) every C<$duration>, with
+an optional scheduler as $scheduler .
+
+=cut
 
 sub interval {
     my ($class, $duration, $scheduler) = @_;
@@ -168,6 +277,13 @@ sub interval {
         maybe_scheduler $scheduler,
     );
 }
+
+=head2 $class->timer($duration, $scheduler)
+
+Generate an event every C<$duration>, with an optional scheduler as
+$scheduler .
+
+=cut
 
 sub timer {
     my ($class, $duration, $scheduler) = @_;
@@ -183,17 +299,43 @@ sub timer {
 
 # from IO ----------------------------------------------------------------------
 
+=head2 $class->from_stdin()
+
+An event of lines from standard input.
+
+=cut
+
 sub from_stdin { return FromStdIn->new }
+
+=head2 $class->from_curses_stdin()
+
+An event of lines from L<Curses> standard input.
+
+=cut
+
 
 sub from_curses_stdin { return FromCursesStdIn->new }
 
 # projections ------------------------------------------------------------------
+
+=head2 $self->let($projection_cb)
+
+Call $projection_cb with one self.
+
+=cut
 
 sub let {
     my ($self, $projection) = @_;
     local $_ = $self;
     return $projection->($self);
 }
+
+=head2 $class->map([ $thing_cb | $thing_datum])
+
+Map the even using $thing_cb or if it's not a callback convert it all
+to $thing_datum .
+
+=cut
 
 sub map {
     my ($self, $thing) = @_;
@@ -202,21 +344,45 @@ sub map {
     return Map->new(wrap => $self, projection => $projection);
 }
 
+=head2 $class->scan($seed, $projection)
+
+B<TODO:> Document. @eilara - I am looking at you.
+
+=cut
+
 sub scan {
     my ($self, $seed, $projection) = @_;
     return Scan->new
         (wrap => $self, seed => $seed, projection => $projection);
 }
 
+=head2 $class->expand($seed, $projection)
+
+B<TODO:> Document. @eilara - I am looking at you.
+
+=cut
+
 sub expand {
     my ($self, $projection) = @_;
     return Expand->new(wrap => $self, projection => $projection);
 }
 
+=head2 $self->grep($filter_cb)
+
+Filters the stream using $filter_cb .
+
+=cut
+
 sub grep {
     my ($self, $predicate) = @_;
     return Grep->new(wrap => $self, predicate => $predicate);
 }
+
+=head2 $class->catch($thing)
+
+B<TODO:> Document. @eilara - I am looking at you.
+
+=cut
 
 sub catch {
     my ($self, $thing) = @_;
@@ -226,49 +392,103 @@ sub catch {
     return Catch->new(wrap => $self, projection => $projection);
 }
 
+=head2 $self->count()
+
+Returns a stream with the count of events.
+
+=cut
+
 sub count {
     my ($self) = @_;
     return Count->new(wrap => $self);
 }
+
+=head2 $self->take($count)
+
+Take the first $count items from the stream.
+
+=cut
 
 sub take {
     my ($self, $count) = @_;
     return Take->new(wrap => $self, _count => $count);
 }
 
+=head2 $self->take_until([$thing_cb | $thing])
+
+Take until the $thing_cb CALLBACK returns true or is equal to $thing .
+
+=cut
+
 sub take_until {
     my ($self, $thing) = @_;
-    return ref $thing eq 'CODE'? 
+    return ref $thing eq 'CODE'?
         TakeUntilPredicate->new(wrap => $self, predicate => $thing):
         TakeUntilObservable->new(o1 => $self, o2 => $thing);
 }
+
+=head2 $self->take_while($predicate_cb)
+
+Take while $predicate_cb returns true.
+
+=cut
 
 sub take_while {
     my ($self, $predicate) = @_;
     return TakeWhilePredicate->new(wrap => $self, predicate => $predicate);
 }
 
+=head2 $self->take_last($count)
+
+Take last $count items from the stream.
+
+=cut
+
 sub take_last {
     my ($self, $count) = @_;
     return TakeLast->new(wrap => $self, _count => $count);
 }
+
+=head2 $self->skip($count)
+
+Skip the first $count items from the stream.
+
+=cut
 
 sub skip {
     my ($self, $count) = @_;
     return Skip->new(wrap => $self, _count => $count);
 }
 
+=head2 $self->skip_until($thing_cb)
+
+Skip until it hits $thing_cb->($_).
+
+=cut
+
 sub skip_until {
     my ($self, $thing) = @_;
-    return ref $thing eq 'CODE'? 
-        die 'TODO':
-        SkipUntilObservable->new(o1 => $self, o2 => $thing);
+    return ref $thing eq 'CODE'
+        ? die 'TODO'
+        : SkipUntilObservable->new(o1 => $self, o2 => $thing);
 }
+
+=head2 $self->repeat($count)
+
+Repeat each element in the stream $count times.
+
+=cut
 
 sub repeat {
     my ($self, $count) = @_;
     return Repeat->new(wrap => $self, _count => $count);
 }
+
+=head2 $self->retry($count)
+
+Retry $count times upon an error.
+
+=cut
 
 sub retry {
     my ($self, $count) = @_;
@@ -278,10 +498,22 @@ sub retry {
                                  __PACKAGE__->throw($error) })
 }
 
+=head2 $self->distinct_changes()
+
+Like uniq() .
+
+=cut
+
 sub distinct_changes {
     my ($self) = @_;
     return DistinctChanges->new(wrap => $self);
 }
+
+=head2 $self->buffer($size, $skip)
+
+B<TODO:> Document. @eilara - I am looking at you.
+
+=cut
 
 sub buffer {
     my ($self, $size, $skip) = @_;
@@ -296,21 +528,39 @@ sub buffer {
 
 # joining ----------------------------------------------------------------------
 
+=head2 $self->push($observable)
+
+Append $observable at the end of this one.
+
+=cut
+
 sub push {
     my ($self, $observable) = @_;
     return Push->new(o1 => $self, o2 => $observable);
 }
 
+=head2 $self->unshift($thing, @rest)
+
+Prepend $thing (if it's an observable) at the end of this one. If it's
+not use L<from_list> on $thing and @rest and use that.
+
+=cut
 
 sub unshift {
     my ($self, $thing, @rest) = @_;
     my $ref = ref $thing;
-    my $observable = ($ref && UNIVERSAL::isa($thing, __PACKAGE__))?
-        $thing:
+    my $observable = ($ref && UNIVERSAL::isa($thing, __PACKAGE__)) ?
+        $thing :
         ref($self)->from_list($thing, @rest);
     # unshift is reverse of push
     return Push->new(o1 => $observable, o2 => $self);
 }
+
+=head2 $self->merge(@observable)
+
+Merge the observables.
+
+=cut
 
 sub merge {
     my ($self, @observables) = @_;
@@ -327,12 +577,24 @@ sub merge {
         MergeNotifications->new(wrap => $self);
 }
 
+=head2 $self->combine_latest($observable)
+
+B<TODO:> Document. @eilara - I am looking at you.
+
+=cut
+
 sub combine_latest {
     my ($self, $observable) = @_;
     return CombineLatest->new(o1 => $self, o2 => $observable);
 }
 
 # time related -----------------------------------------------------------------
+
+=head2 $self->delay($delay, $scheduler)
+
+Delay with time $delay and optional scheduler $scheduler.
+
+=cut
 
 sub delay {
     my ($self, $delay, $scheduler) = @_;
@@ -345,12 +607,27 @@ sub delay {
 
 # side-effects -----------------------------------------------------------------
 
+=head2 $self->do($delay, $action_cb)
+
+Perform $action_cb on the events.
+
+=cut
+
 sub do {
     my ($self, $action) = @_;
     return Do->new(wrap => $self, action => $action);
 }
 
 # blocking ---------------------------------------------------------------------
+
+=head2 $self->foreach(@handlers)
+
+Pass every event in the stream through @handlers - see
+L<sugarize_handlers> .
+
+    $stream->foreach(on_next => sub { say $_; });
+
+=cut
 
 sub foreach {
     my ($self, @handlers) = @_;
