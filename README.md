@@ -104,9 +104,9 @@ correct args:
 Here is how we build the $sketch observable stream:
 
     $button_press   = Observable->from_mouse_press($canvas)
-                                ->map(sub{ 1 });
+                                ->map(1);
     $button_release = Observable->from_mouse_release($canvas)
-                                ->map(sub{ 0 });
+                                ->map(0);
 
     $button_stream = $button_press->merge($button_release)
                                   ->unshift(0);
@@ -141,9 +141,9 @@ combinators applied. We start by creating streams from the low-level
 events:
 
     $button_press   = Observable->from_mouse_press($canvas)
-                                ->map(sub{ 1 });
+                                ->map(1);
     $button_release = Observable->from_mouse_release($canvas)
-                                ->map(sub{ 0 });
+                                ->map(0);
 
 This gives us 2 streams, one per mouse event, which we project to booleans
 using good ol' Perl map. But we want one stream not 2:
