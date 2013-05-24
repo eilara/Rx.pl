@@ -19,7 +19,8 @@ my $fire_at = sub {
 
 my $o1  =        $fire_at->(1000, 1)
           ->push($fire_at->(1000, 2))
-          ->push($fire_at->(1000, 3));
+          ->push($fire_at->(1000, 3))
+          ->push($fire_at->(1000, 0)); # will not arrive
 
 my $o2  =        $fire_at->(1100, 4)
           ->push($fire_at->(2000, 5));
@@ -30,7 +31,7 @@ advance_and_check_event_counts
     [1001 => 0   ],
     [ 100 => 1   ],
     [1000 => 2   ],
-    [ 900 => 3   ],
+    [ 900 => 3,  ],
     [ 100 => 4, 1];
 
 is_deeply $next[0], [1, 4], '1st event';

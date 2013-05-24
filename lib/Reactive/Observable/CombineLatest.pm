@@ -38,7 +38,6 @@ sub on_next {
 
 sub on_complete {
     my $self = shift;
-    return $self->num_completed(1) if $self->num_completed == 0;
     $self->wrap->on_complete;
     $self->unwrap;
 }
