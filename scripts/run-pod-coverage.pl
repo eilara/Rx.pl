@@ -16,4 +16,4 @@ io($ini)->print($orig_text);
 
 my $dir = 'Reactive-0.0.1';
 
-system("export RELEASE_TESTING=1; cd $dir && perl Build.PL && ./Build && prove t/*pod-cover*.t");
+system("export RELEASE_TESTING=1; cd $dir && perl Build.PL && ./Build && prove --blib t/*pod-cover*.t");
