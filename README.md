@@ -282,6 +282,7 @@ What Works
 * merge 2 observables, N observables, observable of observables
 * combine\_latest
 * delay
+* timeout
 * do
 * foreach
 * from\_http\_get using AnyEvent::HTTP
@@ -306,9 +307,6 @@ TODO
   any, all, group by,
   fork join, blocking to\_list,
   ref count connectable, timestamp, time\_interval
-
-* timeout - from subscription to 1st on\_next and timeout
-  between on\_next
 
 * decide- does this use Coro, EV, Coro::EV, Coro::AnyEvent and/or
   AnyEvent? EV works nicely with EV::Glib and Gtk3 at least on
