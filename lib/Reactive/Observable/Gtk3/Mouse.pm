@@ -12,6 +12,14 @@ sub _Event() { 'Reactive::Observable::Gtk3::Mouse::Event' }
 
 =head1 METHODS
 
+=head2 $class->new( widget => $widget, event => $event)
+
+Construct a new class from widget $widget and event $event.
+
+=head2 $self->run($observer)
+
+Attach to the $observer.
+
 =head2 TRUE
 
 Imported from Gtk+ . B<Ignore> .
