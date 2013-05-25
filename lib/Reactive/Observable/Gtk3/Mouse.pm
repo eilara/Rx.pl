@@ -8,7 +8,7 @@ has [qw(widget event)] => (is => 'ro', required => 1);
 
 extends 'Reactive::Observable';
 
-sub Event() { 'Reactive::Observable::Gtk3::Mouse::Event' }
+sub _Event() { 'Reactive::Observable::Gtk3::Mouse::Event' }
 
 sub run {
     my ($self, $observer) = @_;
@@ -31,7 +31,7 @@ sub handle_event {
     # sometimes Gtk sends here non-button events
     return FALSE if ref($event) eq 'Gtk3::Gdk::Event';
     my ($unknown, $ex, $ey, $state) = $event->window->get_pointer;
-    $observer->on_next(Event->new($widget, $ex, $ey));
+    $observer->on_next(_Event->new($widget, $ex, $ey));
 }
 
 package Reactive::Observable::Gtk3::Mouse::Event;
