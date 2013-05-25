@@ -10,23 +10,35 @@ extends 'Reactive::Observable';
 
 sub _Event() { 'Reactive::Observable::Gtk3::Mouse::Event' }
 
+=head1 METHODS
+
+=head2 TRUE
+
+Imported from Gtk+ . B<Ignore> .
+
+=head2 FALSE
+
+Imported from Gtk+ . B<Ignore> .
+
+=cut
+
 sub run {
     my ($self, $observer) = @_;
     my $widget  = $self->widget;
-    my $handler = sub { handle_event($observer, @_) };
+    my $handler = sub { _handle_event($observer, @_) };
     my $signal  = $widget->signal_connect($self->event, $handler );
-    my $cleanup = sub { disconnect_handler($widget, $signal) };
+    my $cleanup = sub { _disconnect_handler($widget, $signal) };
     return DisposableClosure->new(cleanup => $cleanup);
 }
 
-sub disconnect_handler {
+sub _disconnect_handler {
     my ($widget, $signal) = @_;
     $widget->signal_handler_disconnect($signal)
         if $widget->signal_handler_is_connected($signal);
 }
 
 
-sub handle_event {
+sub _handle_event {
     my ($observer, $widget, $event) = @_;
     # sometimes Gtk sends here non-button events
     return FALSE if ref($event) eq 'Gtk3::Gdk::Event';
