@@ -8,6 +8,7 @@ use aliased 'Reactive::Observer::Empty' => 'Empty';
 #                     also the subscription of this observer
 #                     and thus must be weak, for outside control
 #                     of the subscription
+#                     TODO: surely there is a better way to explain that
 has disposable_parent => (is => 'ro', required => 1, weak_ref => 1);
 has wrap              => (is => 'ro', required => 1);
 
@@ -45,6 +46,9 @@ sub unwrap_parent {
 
 sub unwrap {
     my $self = shift;
+    # O->once(1)->take(1) for example, requires that we not delete
+    # the wrapped observer, but replace with Empty because more
+    # notifications will arrive: a call to on_complete
     $self->{wrap} = Empty->new;
     $self->unwrap_parent unless $self->is_disposing;
 }

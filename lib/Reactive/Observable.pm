@@ -37,6 +37,7 @@ use aliased 'Reactive::Observable::MergeNotifications';
 use aliased 'Reactive::Observable::MultiMerge';
 use aliased 'Reactive::Observable::CombineLatest';
 use aliased 'Reactive::Observable::Delay';
+use aliased 'Reactive::Observable::Timeout';
 use aliased 'Reactive::Observable::Do';
 
 sub empty_disposable() { Reactive::Disposable::Empty->new }
@@ -601,6 +602,24 @@ sub delay {
     return Delay->new(
         wrap  => $self,
         delay => $delay,
+        maybe_scheduler $scheduler
+    );
+}
+
+
+=head2 $self->timeout($timeout, $observable, $scheduler)
+
+Switch to $observable if no activity for $timeout msec after
+subscription.
+
+=cut
+
+sub timeout {
+    my ($self, $timeout, $next_observable, $scheduler) = @_;
+    return Timeout->new(
+        o1      => $self,
+        o2      => $next_observable,
+        timeout => $timeout,
         maybe_scheduler $scheduler
     );
 }
