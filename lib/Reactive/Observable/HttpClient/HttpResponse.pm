@@ -9,7 +9,19 @@ has [qw(url args method)] => (is => 'ro', required => 1);
 
 extends 'Reactive::Observable';
 
-sub Event() { 'Reactive::Observable::HttpClient::HttpResponse::Event' }
+sub _Event() { 'Reactive::Observable::HttpClient::HttpResponse::Event' }
+
+=head1 METHODS
+
+=head2 $class->new( url => $url, args => $args, method => $method)
+
+Construct a new class from $url, $args, and $method .
+
+=head2 $self->run($observer)
+
+Attach to the $observer.
+
+=cut
 
 sub run {
     my ($self, $observer) = @_;
@@ -19,7 +31,7 @@ sub run {
         my ($body, $headers) = @_;
         $weak_disposable->unwrap if $weak_disposable;
         if (defined $body) {
-            $observer->on_next(Event->new($body, $headers));
+            $observer->on_next(_Event->new($body, $headers));
             $observer->on_complete;
         } else {
             my $error = "Error at '$headers->{URL}' ".
