@@ -1,4 +1,5 @@
 package Reactive::Scheduler;
+# ABSTRACT: A role defining a reactive scheduler
 
 use Moose::Role;
 use Scalar::Util qw(weaken);
@@ -34,5 +35,45 @@ sub _schedule_periodic {
     $disposable->wrap($wrap);
 }
 
-
 1;
+
+__END__
+
+=head1 DESCRIPTION
+
+This role provides the constraints and definitions of any reactive scheduler.
+If you implement any scheduler for L<Reactive>, you need to consume this role.
+
+    package Reactive::Scheduler::IOAsync
+    use Moose;
+    with 'Reactive::Scheduler';
+
+    # implementation left as an exercise to the reader
+
+=head1 REQUIRES
+
+This role requires the consuming class to implement the following methods:
+
+=over 4
+
+=item * schedule_once($at,$action)
+
+Schedule at a specific time (in milliseconds) a new event (provided as a code
+reference).
+
+=item * now
+
+The current time in milliseconds, as decided by the event loop.
+
+It will not be called with any arguments.
+
+=back
+
+=head1 METHODS
+
+=head2 schedule_periodic
+
+Schedules a new periodic event.
+
+Uses L<Reactive:::Disposable::Wrapper>.
+
