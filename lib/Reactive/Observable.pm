@@ -1,4 +1,5 @@
 package Reactive::Observable;
+# ABSTRACT: An observable object, the guts of Reactive
 
 use Moose;
 use Scalar::Util qw(weaken);
@@ -673,7 +674,194 @@ sub foreach {
     return undef;
 }
 
-
 1;
 
+__END__
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 ATTRIBUTES
+
+=head2 scheduler
+
+The scheduler object used. The default being L<Reactive::Scheduler::Coro>.
+
+=head1 METHODS
+
+The information on the methods provided below is meant for Reactive hackers
+and describes implementation details for each method. If you want to learn the
+syntax of L<Reactive> and the commands associated with them, please refer to
+L<Reactive::Observable::Syntax>.
+
+=head2 empty_disposable
+
+Returns a L<Reactive::Disposable::Empty> object.
+
+=head2 subscribe
+
+Subscribe with a set of handlers.
+
+=head2 subscribe_observer
+
+Subscribe with a observer.
+
+=head2 sugarize_handlers
+
+Identify different forms of providing handlers and return them in a uniform
+manner.
+
+=head2 maybe_scheduler
+
+Receives a possible scheduler object and returns an empty list or a hash with
+a scheduler key and object as value.
+
+=head2 once($event)
+
+Creates a new event using L<Reactive::Observable::FromClosure> with a single
+call to the event.
+
+=head2 range($from,$size)
+
+Creates a new event using L<Reactive::Observable::FromClosure> with multiple
+calls indicated with a range.
+
+=head2 empty
+
+Creates a new event using L<Reactive::Observable::FromClosure> with no calls.
+
+This is the opposite as C<throw>.
+
+=head2 never
+
+Creates a new event using L<Reactive::Observable::FromClosure> which will never
+actually be completed.
+
+=head2 throw($error)
+
+Creates a new event using L<Reactive::Observable::FromClosure> which will
+simply receive an error.
+
+This is the opposite as C<empty>.
+
+=head2 from_list(@list)
+
+Creates a new event using L<Reactive::Observable::FromClosure> with multiple
+calls provided by a list.
+
+=head2 subject
+
+Creates a new L<Reactive::Observable::Subject> object.
+
+=head2 publish
+
+Creates a new L<Reactive::Observable::Connectable> object.
+
+=head2 materialize
+
+Creates a new L<Reactive::Observable::Materialize> object.
+
+=head2 memoize
+
+Creates a memozied L<Reactive::Observable::Connectable> object by providing
+a L<Reactive::Observable::ReplaySubject> object as the subject.
+
+=head2 defer($projection)
+
+Creates a new L<Reactive::Observable::Defer> object with the given projection.
+
+=head2 interval($duration,$scheduler?)
+
+Creates a new L<Reactive::Observable::Generate> object.
+
+=head2 timer($duration,$scheduler?)
+
+Creates a new L<Reactive::Observable::Generate> object.
+
+=head2 from_stdin
+
+Creates a new L<Reactive::Observable::FromStdIn> object.
+
+=head2 from_curses_stdin
+
+Creates a new L<Reactive::Observable::FromCursesStdIn> object.
+
+=head2 let($projection)
+
+=head2 map($thing)
+
+=head2 scan($seed,$projection)
+
+Creates a new L<Reactive::Observable::Scan> object.
+
+=head2 expand($projection)
+
+Creates a new L<Reactive::Observable::Expand> object.
+
+=head2 grep($predicate)
+
+Creates a new L<Reactive::Observable::Grep> object.
+
+=head2 catch($thing)
+
+=head2 count
+
+Creates a new L<Reactive::Observable::Count> object.
+
+=head2 take($count)
+
+Creates a new L<Reactive::Observable::Take> object.
+
+=head2 take_until($thing)
+
+=head2 take_while($predicate)
+
+Creates a new L<Reactive::Observable::TakeWhilePredicate> object.
+
+=head2 take_last($count)
+
+Creates a new L<Reactive::Observable::TakeLast> object.
+
+=head2 skip($count)
+
+Creates a new L<Reactive::Observable::Skip> object.
+
+=head2 skip_until($thing)
+
+=head2 repeat($count)
+
+Creates a new L<Reactive::Observable::Repeat> object.
+
+=head2 retry($count)
+
+=head2 distinct_changes
+
+Creates a new L<Reactive::Observable::DistinctChanges> object.
+
+=head2 buffer($size,$skip)
+
+Creates a new L<Reactive::Observable::Buffer> object.
+
+=head2 push($observable)
+
+Creates a new L<Reactive::Observable::Push> object.
+
+=head2 unshift($thing,@rest)
+
+=head2 merge(@observables)
+
+=head2 combine_latest($observable)
+
+Creates a new L<Reactive::Observable::CombineLatest> object.
+
+=head2 delay($delay,$scheduler?)
+
+Creates a new L<Reactive::Observable::Delay> object.
+
+=head2 do($action)
+
+Creates a new L<Reactive::Observable::Do> object.
+
+=head2 foreach(@handlers)
 
