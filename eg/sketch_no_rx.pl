@@ -57,7 +57,7 @@ sub mouse_press {
 
 sub mouse_release {
     my ($da, $event) = @_;
-    $is_pressed = 0;    
+    $is_pressed = 0;
     FALSE;
 }
 

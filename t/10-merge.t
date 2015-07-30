@@ -8,7 +8,7 @@ use Reactive;
 use Reactive::Test::ObservableFixture;
 
 subtest 'merge 2 timers and interval' => sub {
-    my $s = subscribe 
+    my $s = subscribe
               Observable->timer(2000, $scheduler)
      ->merge( Observable->timer(3000, $scheduler) )
      ->merge( Observable->interval(1600, $scheduler) );
@@ -24,7 +24,7 @@ subtest 'merge 2 timers and interval' => sub {
 restart;
 
 subtest 'completes when all merged observables complete' => sub {
-    my $s = subscribe 
+    my $s = subscribe
               Observable->timer(2000, $scheduler)
      ->merge( Observable->timer(3000, $scheduler) );
 
@@ -36,7 +36,7 @@ subtest 'completes when all merged observables complete' => sub {
 restart;
 
 subtest 'error on child causes error on parent' => sub {
-    my $s = subscribe 
+    my $s = subscribe
         Observable->interval(100, $scheduler)
                   ->merge( Observable->timer(150, $scheduler)
                                      ->push(Observable->throw('Error Foo'))
@@ -51,7 +51,7 @@ subtest 'error on child causes error on parent' => sub {
 restart;
 
 subtest 'merge observables that complete on subscription' => sub {
-    my $s = subscribe 
+    my $s = subscribe
               Observable->once(1)
      ->merge( Observable->once(2) );
 
@@ -61,7 +61,7 @@ subtest 'merge observables that complete on subscription' => sub {
 restart;
 
 subtest 'merge with observable that completes on subscription' => sub {
-    my $s = subscribe 
+    my $s = subscribe
               Observable->once(1)
      ->merge( Observable->timer(100 ,$scheduler) );
 

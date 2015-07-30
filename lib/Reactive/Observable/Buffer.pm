@@ -32,7 +32,7 @@ sub on_next {
     my @value  = @buffer; # copy list cause must complete all internal
                           # computes so on_next is a tail call
     @buffer = @buffer[-$self->skip..-1];
-    $self->buffer(\@buffer);        
+    $self->buffer(\@buffer);
     $self->wrap->on_next(\@value);
 }
 

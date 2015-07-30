@@ -40,7 +40,7 @@ sub on_next {
 
     # can keep strong ref to wrapped observer, as this object does
     my $wrap = $self->wrap;
-    # and a weak ref to the timer handle, which is held 
+    # and a weak ref to the timer handle, which is held
     # in the disposable parent with a strong ref
     my $disposable = DisposableWrapper->new;
     weaken (my $weak_disposable = $disposable);

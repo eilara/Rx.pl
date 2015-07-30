@@ -20,7 +20,7 @@ sub build_global_listener {
            my ($handle, $fatal, $message) = @_;
            $on_error->($message);
         };
-    return $handle;    
+    return $handle;
 }
 
 sub destroy_handle { pop->destroy }

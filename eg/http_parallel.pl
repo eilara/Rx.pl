@@ -24,7 +24,7 @@ sub decode_query
 sub get_summary { Observable->from_http_get($Url. shift) }
 
 Observable->merge(
-    
+
     [@Queries]->map(\&uri_escape)   # -> list of string
               ->map(\&get_summary)  # -> list of observables
                                     #    of http response

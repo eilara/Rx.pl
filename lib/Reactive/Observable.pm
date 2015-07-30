@@ -95,7 +95,7 @@ C<'on_complete'> that can be empty.
 
 =cut
 
-sub sugarize_handlers {    
+sub sugarize_handlers {
     my ($self, @handlers) = @_;
     # sugar - if one sub only, then it is on_next handler
     my %handlers = (@handlers == 1)? (on_next => $handlers[0]): @handlers;

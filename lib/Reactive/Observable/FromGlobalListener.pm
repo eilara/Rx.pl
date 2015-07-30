@@ -20,7 +20,7 @@ sub run {
             sub{ $Subject->on_error(shift); $self->init },
         );
     }
-    
+
     my $cleanup = sub {
         $Subscription_Count-- if $Subscription_Count > 0;
         $self->init unless $Subscription_Count;

@@ -15,7 +15,7 @@ sub init        { initscr; noecho; cbreak; curs_set(0) }
 sub cleanup     { endwin }
 sub add_vectors { [$_[0]->[0] + $_[1]->[0], $_[0]->[1] + $_[1]->[1]] }
 
-sub draw_pen { 
+sub draw_pen {
     my ($xy, $brush) = @{shift()};
     addstr @$xy, $brush;
     refresh;
@@ -49,7 +49,7 @@ __END__
 
       my @stdin = Observable->from_curses_stdin;
       my @quit  = grep { /q/ } @stdin;
-      my @brush = uniq { $a eq $b } 
+      my @brush = uniq { $a eq $b }
                   unshift 'X'
                   map { $brush{$_} }
                   grep {exists $brush{$_} }
@@ -62,4 +62,4 @@ __END__
                   grep { exists $move{$_}
                   @stdin;
 
-      draw_pen($_) foreach @xy;                  
+      draw_pen($_) foreach @xy;

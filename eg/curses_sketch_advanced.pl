@@ -21,7 +21,7 @@ sub move_cursor {
     doupdate;
 }
 
-sub draw_pen { 
+sub draw_pen {
     my ($yx, $brush) = @{shift()};
     addstr @$yx, $brush;
     refresh;

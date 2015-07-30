@@ -15,7 +15,7 @@ sub init        { initscr; noecho; cbreak; curs_set(0) }
 sub cleanup     { endwin }
 sub add_vectors { [$_[0]->[0] + $_[1]->[0], $_[0]->[1] + $_[1]->[1]] }
 
-sub draw_pen { 
+sub draw_pen {
     my ($xy, $brush) = @{shift()};
     addstr @$xy, $brush;
     refresh;
