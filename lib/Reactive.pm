@@ -7,7 +7,7 @@ use Coro::EV;
 use Coro::Handle;
 use aliased 'Reactive::Observable';
 
-our $VERSION = '0.0.1';
+our $VERSION = 'v0.0.1';
 
 use base 'Exporter';
 our @EXPORT=qw(Observable);
